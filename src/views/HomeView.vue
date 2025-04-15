@@ -1,7 +1,9 @@
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import ThreeCanvas from '@/components/ThreeCanvas.vue'
+</script>
 
 <template>
   <div>
-    <h1>Hello W333</h1>
+    <ThreeCanvas />
   </div>
 </template>
