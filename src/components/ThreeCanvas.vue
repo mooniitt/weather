@@ -14,6 +14,8 @@ const canvasContainer = ref<HTMLDivElement | null>(null)
 onMounted(() => {
   // 1. 创建场景
   const scene = new THREE.Scene()
+  // 设置背景色为白色
+  scene.background = new THREE.Color(0xffffff)
 
   // 2. 创建相机
   const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000)
