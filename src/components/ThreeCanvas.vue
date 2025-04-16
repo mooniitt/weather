@@ -6,8 +6,9 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue'
 import * as THREE from 'three'
-// 新增导入 GLTFLoader
-import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader'
+// 导入 GLTFLoader 推荐写法
+// @ts-ignore
+import { GLTFLoader, GLTF } from 'three/examples/jsm/loaders/GLTFLoader.js'
 
 const canvasContainer = ref<HTMLDivElement | null>(null)
 
@@ -26,6 +27,7 @@ onMounted(() => {
   renderer.setSize(window.innerWidth, window.innerHeight)
   // 启用阴影
   renderer.shadowMap.enabled = true
+  // @ts-ignore
   canvasContainer.value.appendChild(renderer.domElement)
 
   // 4. 添加光照
@@ -55,10 +57,10 @@ onMounted(() => {
   // 6. 加载assets下的cube.glb模型
   const loader = new GLTFLoader()
   let cube: THREE.Object3D | null = null
-  loader.load(new URL('@/assets/cube.glb', import.meta.url).href, (gltf) => {
+  loader.load(new URL('@/assets/cube.glb', import.meta.url).href, (gltf: GLTF) => {
     cube = gltf.scene
     // 更通用地设置所有支持 color 的材质为白色，并移除贴图
-    cube.traverse((child) => {
+    cube?.traverse((child) => {
       if ((child as THREE.Mesh).isMesh) {
         const mesh = child as THREE.Mesh
         // 允许模型投射和接收阴影
@@ -77,7 +79,9 @@ onMounted(() => {
         })
       }
     })
-    scene.add(cube)
+    if (cube) {
+      scene.add(cube)
+    }
   })
 
   // 7. 渲染循环
