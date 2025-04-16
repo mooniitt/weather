@@ -24,9 +24,35 @@ onMounted(() => {
   // 3. 创建渲染器
   const renderer = new THREE.WebGLRenderer()
   renderer.setSize(window.innerWidth, window.innerHeight)
+  // 启用阴影
+  renderer.shadowMap.enabled = true
   canvasContainer.value.appendChild(renderer.domElement)
 
-  // 4. 加载assets下的cube.glb模型
+  // 4. 添加光照
+  // 环境光
+  const ambientLight = new THREE.AmbientLight(0xffffff, 0.5)
+  scene.add(ambientLight)
+  // 平行光
+  const directionalLight = new THREE.DirectionalLight(0xffffff, 1)
+  directionalLight.position.set(5, 10, 7.5)
+  directionalLight.castShadow = true
+  // 可选：调整阴影分辨率和范围
+  directionalLight.shadow.mapSize.width = 1024
+  directionalLight.shadow.mapSize.height = 1024
+  directionalLight.shadow.camera.near = 0.5
+  directionalLight.shadow.camera.far = 50
+  scene.add(directionalLight)
+
+  // 5. 添加地面用于接收阴影
+  const groundGeometry = new THREE.PlaneGeometry(20, 20)
+  const groundMaterial = new THREE.MeshStandardMaterial({ color: 0xeeeeee })
+  const ground = new THREE.Mesh(groundGeometry, groundMaterial)
+  ground.rotation.x = -Math.PI / 2
+  ground.position.y = -1
+  ground.receiveShadow = true
+  scene.add(ground)
+
+  // 6. 加载assets下的cube.glb模型
   const loader = new GLTFLoader()
   let cube: THREE.Object3D | null = null
   loader.load(new URL('@/assets/cube.glb', import.meta.url).href, (gltf) => {
@@ -35,6 +61,9 @@ onMounted(() => {
     cube.traverse((child) => {
       if ((child as THREE.Mesh).isMesh) {
         const mesh = child as THREE.Mesh
+        // 允许模型投射和接收阴影
+        mesh.castShadow = true
+        mesh.receiveShadow = true
         const materials = Array.isArray(mesh.material) ? mesh.material : [mesh.material]
         materials.forEach((mat) => {
           // 只要有 color 属性就设置为白色
@@ -51,14 +80,14 @@ onMounted(() => {
     scene.add(cube)
   })
 
-  // 5. 渲染循环
+  // 7. 渲染循环
   function animate() {
     requestAnimationFrame(animate)
 
     // 如果模型已加载，旋转它
     if (cube) {
       cube.rotation.x += 0.01
-      cube.rotation.y += 0.01
+      cube.rotation.y += 0.02
     }
 
     renderer.render(scene, camera)
