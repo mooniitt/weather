@@ -50,17 +50,21 @@ onMounted(() => {
   const groundMaterial = new THREE.MeshStandardMaterial({ color: 0xeeeeee })
   const ground = new THREE.Mesh(groundGeometry, groundMaterial)
   ground.rotation.x = -Math.PI / 2
-  ground.position.y = -1
+  ground.position.y = -2 // 地面下移到 y = -2
   ground.receiveShadow = true
   scene.add(ground)
 
   // 6. 加载assets下的cube.glb模型
   const loader = new GLTFLoader()
-  let cube: THREE.Object3D | null = null
+  let cube: THREE.Object3D
   loader.load(new URL('@/assets/cube.glb', import.meta.url).href, (gltf: GLTF) => {
     cube = gltf.scene
+    // 缩小一倍
+    cube.scale.set(0.5, 0.5, 0.5)
+    // 设置 cube 的 y 位置为 0，确保与地面有2的距离
+    cube.position.y = 0
     // 更通用地设置所有支持 color 的材质为白色，并移除贴图
-    cube?.traverse((child) => {
+    cube.traverse((child) => {
       if ((child as THREE.Mesh).isMesh) {
         const mesh = child as THREE.Mesh
         // 允许模型投射和接收阴影
@@ -68,20 +72,22 @@ onMounted(() => {
         mesh.receiveShadow = true
         const materials = Array.isArray(mesh.material) ? mesh.material : [mesh.material]
         materials.forEach((mat) => {
-          // 只要有 color 属性就设置为白色
-          if ((mat as any).color && typeof (mat as any).color.set === 'function') {
-            ;(mat as any).color.set(0xffffff)
+          // 类型守卫，判断 mat 是否有 color 属性
+          if (
+            'color' in mat &&
+            mat.color instanceof THREE.Color &&
+            typeof mat.color.set === 'function'
+          ) {
+            mat.color.set(0xffffff)
           }
           // 移除贴图
-          if ((mat as any).map) {
-            ;(mat as any).map = null
+          if ('map' in mat && mat.map) {
+            mat.map = null
           }
         })
       }
     })
-    if (cube) {
-      scene.add(cube)
-    }
+    scene.add(cube)
   })
 
   // 7. 渲染循环
@@ -89,10 +95,8 @@ onMounted(() => {
     requestAnimationFrame(animate)
 
     // 如果模型已加载，旋转它
-    if (cube) {
-      cube.rotation.x += 0.01
-      cube.rotation.y += 0.02
-    }
+    cube.rotation.x += 0.01
+    cube.rotation.y += 0.02
 
     renderer.render(scene, camera)
   }
