@@ -36,7 +36,7 @@ const getIcon = (condition: string) => {
           class="flex flex-col items-center min-w-[4.5rem] gap-4 group cursor-default"
         >
           <span class="text-[13px] font-medium text-white/50 group-hover:text-white transition-colors">{{ h.time }}</span>
-          <span class="material-symbols-outlined text-white text-[32px] opacity-90 group-hover:scale-110 transition-transform">{{ getIcon(h.weather || h.condition) }}</span>
+          <span class="material-symbols-outlined text-white text-[32px] opacity-90 group-hover:scale-110 transition-transform">{{ getIcon(h.weather) }}</span>
           <span class="text-[20px] font-bold text-white">{{ h.temp }}°</span>
         </div>
       </div>

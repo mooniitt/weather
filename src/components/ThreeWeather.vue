@@ -1,382 +1,402 @@
 <script setup lang="ts">
 import { onMounted, onUnmounted, ref, watch, toRefs } from 'vue'
 import * as THREE from 'three'
+import type { WeatherType } from '../stores/weather'
 
-// 接收天气类型 Props
-const props = defineProps<{
-  weatherType: 'sunny' | 'rainy' | 'cloudy' | 'snowy'
-}>()
+interface WeatherProps {
+  weatherType: WeatherType
+}
 
+const props = defineProps<WeatherProps>()
 const { weatherType } = toRefs(props)
 const container = ref<HTMLDivElement | null>(null)
 
+// --- Constants & Config ---
+const CONFIG = {
+  PARTICLE_COUNT: 4000,
+  RAIN_SPEED: 0.6,
+  SNOW_SPEED: 0.05,
+  CLOUD_COUNT: 12,
+  TRANSITION_SPEED: 0.02,
+}
+
+// --- Weather State Definitions ---
+const WEATHER_STYLES: Record<WeatherType, {
+  topColor: THREE.Color,
+  bottomColor: THREE.Color,
+  fogColor: THREE.Color,
+  fogDensity: number,
+  lightIntensity: number,
+  cloudOpacity: number,
+  particleType: 'none' | 'rain' | 'snow' | 'mist',
+  isStormy: boolean
+}> = {
+  sunny: {
+    topColor: new THREE.Color(0x0077ff),
+    bottomColor: new THREE.Color(0x88ccff),
+    fogColor: new THREE.Color(0x88ccff),
+    fogDensity: 0.002,
+    lightIntensity: 1.2,
+    cloudOpacity: 0.2,
+    particleType: 'none',
+    isStormy: false
+  },
+  cloudy: {
+    topColor: new THREE.Color(0x445566),
+    bottomColor: new THREE.Color(0x8899aa),
+    fogColor: new THREE.Color(0x8899aa),
+    fogDensity: 0.015,
+    lightIntensity: 0.8,
+    cloudOpacity: 0.6,
+    particleType: 'none',
+    isStormy: false
+  },
+  overcast: {
+    topColor: new THREE.Color(0x222233),
+    bottomColor: new THREE.Color(0x444455),
+    fogColor: new THREE.Color(0x444455),
+    fogDensity: 0.025,
+    lightIntensity: 0.4,
+    cloudOpacity: 0.9,
+    particleType: 'none',
+    isStormy: false
+  },
+  rainy: {
+    topColor: new THREE.Color(0x1a1a2e),
+    bottomColor: new THREE.Color(0x16213e),
+    fogColor: new THREE.Color(0x16213e),
+    fogDensity: 0.04,
+    lightIntensity: 0.3,
+    cloudOpacity: 0.8,
+    particleType: 'rain',
+    isStormy: false
+  },
+  thunderstorm: {
+    topColor: new THREE.Color(0x08081a),
+    bottomColor: new THREE.Color(0x101020),
+    fogColor: new THREE.Color(0x101020),
+    fogDensity: 0.05,
+    lightIntensity: 0.2,
+    cloudOpacity: 1.0,
+    particleType: 'rain',
+    isStormy: true
+  },
+  snowy: {
+    topColor: new THREE.Color(0x2c3e50),
+    bottomColor: new THREE.Color(0xbdc3c7),
+    fogColor: new THREE.Color(0xbdc3c7),
+    fogDensity: 0.03,
+    lightIntensity: 0.7,
+    cloudOpacity: 0.7,
+    particleType: 'snow',
+    isStormy: false
+  },
+  foggy: {
+    topColor: new THREE.Color(0x555555),
+    bottomColor: new THREE.Color(0xaaaaaa),
+    fogColor: new THREE.Color(0xaaaaaa),
+    fogDensity: 0.08,
+    lightIntensity: 0.5,
+    cloudOpacity: 0.4,
+    particleType: 'mist',
+    isStormy: false
+  },
+  mist: {
+    topColor: new THREE.Color(0x778899),
+    bottomColor: new THREE.Color(0xb0c4de),
+    fogColor: new THREE.Color(0xb0c4de),
+    fogDensity: 0.04,
+    lightIntensity: 0.7,
+    cloudOpacity: 0.3,
+    particleType: 'mist',
+    isStormy: false
+  },
+  haze: {
+    topColor: new THREE.Color(0x4b3a2a),
+    bottomColor: new THREE.Color(0x8e7c6b),
+    fogColor: new THREE.Color(0x8e7c6b),
+    fogDensity: 0.06,
+    lightIntensity: 0.6,
+    cloudOpacity: 0.5,
+    particleType: 'mist',
+    isStormy: false
+  }
+}
+
+// --- Engine State ---
 let scene: THREE.Scene
 let camera: THREE.PerspectiveCamera
 let renderer: THREE.WebGLRenderer
 let animationId: number
-let weatherSystem: THREE.Object3D | null = null
-let skyMesh: THREE.Mesh | null = null
+let skyMaterial: THREE.ShaderMaterial
+let particleSystem: THREE.Points
+let clouds: THREE.Group
+let mainLight: THREE.DirectionalLight
+let currentTargetStyle = { ...WEATHER_STYLES.sunny }
+let lightningTime = 0
 
-// --- 纹理素材生成 ---
-const cloudTexture = createCloudTexture()
-const rainTexture = createDropTexture()
-const snowTexture = createSnowTexture()
-const sunTexture = createSunTexture()
+// --- Resources ---
+const textures = {
+  smoke: createSmokeTexture(),
+  rain: createRainTexture(),
+  snow: createSnowTexture()
+}
 
-// 初始化 3D 场景
 function init() {
   if (!container.value) return
 
   scene = new THREE.Scene()
+  camera = new THREE.PerspectiveCamera(75, container.value.clientWidth / container.value.clientHeight, 0.1, 1000)
+  camera.position.z = 8
 
-  // 设置摄像机
-  camera = new THREE.PerspectiveCamera(
-    75,
-    container.value.clientWidth / container.value.clientHeight,
-    0.1,
-    1000,
-  )
-  camera.position.z = 5
-
-  // 设置渲染器
-  renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true })
+  renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true, powerPreference: 'high-performance' })
   renderer.setSize(container.value.clientWidth, container.value.clientHeight)
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
   container.value.appendChild(renderer.domElement)
 
-  // 初始化天气系统
-  updateWeather(weatherType.value)
+  // 1. Sky Background
+  createSky()
 
-  // 灯光效果
-  const ambientLight = new THREE.AmbientLight(0xffffff, 0.6)
-  scene.add(ambientLight)
+  // 2. Cloud System
+  createClouds()
 
-  const dirLight = new THREE.DirectionalLight(0xffffff, 1)
-  dirLight.position.set(5, 10, 7)
-  scene.add(dirLight)
+  // 3. Particle System
+  createParticles()
+
+  // 4. Lighting
+  mainLight = new THREE.DirectionalLight(0xffffff, 1)
+  mainLight.position.set(5, 10, 7)
+  scene.add(mainLight)
+  scene.add(new THREE.AmbientLight(0xffffff, 0.4))
 
   window.addEventListener('resize', onWindowResize)
+  updateTargetState(weatherType.value)
   animate()
 }
 
-// 处理窗口缩放
+function createSky() {
+  const vertexShader = `
+    varying vec2 vUv;
+    void main() {
+      vUv = uv;
+      gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+    }
+  `
+  const fragmentShader = `
+    uniform vec3 topColor;
+    uniform vec3 bottomColor;
+    uniform float uTime;
+    varying vec2 vUv;
+    
+    // Simple noise for atmosphere
+    float hash(vec2 p) { return fract(sin(dot(p, vec2(12.9898, 78.233))) * 43758.5453); }
+    
+    void main() {
+      float noise = hash(vUv + uTime * 0.01) * 0.02;
+      vec3 col = mix(bottomColor, topColor, vUv.y + noise);
+      float vignette = 1.0 - smoothstep(0.5, 1.8, length(vUv - 0.5));
+      gl_FragColor = vec4(col * (0.9 + 0.1 * vignette), 1.0);
+    }
+  `
+
+  const geometry = new THREE.SphereGeometry(100, 32, 32)
+  skyMaterial = new THREE.ShaderMaterial({
+    vertexShader,
+    fragmentShader,
+    uniforms: {
+      topColor: { value: new THREE.Color(0x0077ff) },
+      bottomColor: { value: new THREE.Color(0x88ccff) },
+      uTime: { value: 0 }
+    },
+    side: THREE.BackSide,
+    depthWrite: false
+  })
+
+  const sky = new THREE.Mesh(geometry, skyMaterial)
+  scene.add(sky)
+}
+
+function createClouds() {
+  clouds = new THREE.Group()
+  const geometry = new THREE.PlaneGeometry(16, 8)
+  
+  for (let i = 0; i < CONFIG.CLOUD_COUNT; i++) {
+    const material = new THREE.MeshBasicMaterial({
+      map: textures.smoke,
+      transparent: true,
+      opacity: 0,
+      depthWrite: false,
+      blending: THREE.AdditiveBlending
+    })
+    const cloud = new THREE.Mesh(geometry, material)
+    cloud.position.set(
+      (Math.random() - 0.5) * 40,
+      (Math.random() - 0.5) * 10 + 2,
+      (Math.random() - 0.5) * 15 - 5
+    )
+    cloud.scale.setScalar(Math.random() * 2 + 1)
+    cloud.userData.speed = Math.random() * 0.005 + 0.002
+    clouds.add(cloud)
+  }
+  scene.add(clouds)
+}
+
+function createParticles() {
+  const geometry = new THREE.BufferGeometry()
+  const positions = new Float32Array(CONFIG.PARTICLE_COUNT * 3)
+  const velocities = new Float32Array(CONFIG.PARTICLE_COUNT)
+
+  for (let i = 0; i < CONFIG.PARTICLE_COUNT; i++) {
+    positions[i * 3] = (Math.random() - 0.5) * 30
+    positions[i * 3 + 1] = (Math.random() - 0.5) * 30
+    positions[i * 3 + 2] = (Math.random() - 0.5) * 20
+    velocities[i] = Math.random() * 0.5 + 0.5
+  }
+
+  geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3))
+  geometry.setAttribute('velocity', new THREE.BufferAttribute(velocities, 1))
+
+  const material = new THREE.PointsMaterial({
+    size: 0.1,
+    transparent: true,
+    opacity: 0,
+    map: textures.rain,
+    blending: THREE.AdditiveBlending,
+    depthWrite: false
+  })
+
+  particleSystem = new THREE.Points(geometry, material)
+  scene.add(particleSystem)
+}
+
+function animate() {
+  animationId = requestAnimationFrame(animate)
+  const time = Date.now() * 0.001
+
+  // 1. Transition State
+  lerpState()
+
+  // 2. Animate Sky
+  if (skyMaterial) skyMaterial.uniforms.uTime.value = time
+
+  // 3. Animate Clouds
+  if (clouds) {
+    clouds.children.forEach((cloud: any) => {
+      cloud.position.x -= cloud.userData.speed
+      if (cloud.position.x < -25) cloud.position.x = 25
+      cloud.material.opacity = THREE.MathUtils.lerp(cloud.material.opacity, currentTargetStyle.cloudOpacity * 0.5, 0.01)
+    })
+  }
+
+  // 4. Animate Particles
+  if (particleSystem) animateParticles(time)
+
+  // 5. Lightning Logic
+  if (mainLight) handleLightning(time)
+
+  renderer.render(scene, camera)
+}
+
+function animateParticles(time: number) {
+  const posArr = particleSystem.geometry.attributes.position.array as Float32Array
+  const velArr = particleSystem.geometry.attributes.velocity.array as Float32Array
+  const type = currentTargetStyle.particleType
+  
+  // Update visibility
+  const targetOpacity = type === 'none' ? 0 : 0.6
+  const mat = particleSystem.material as THREE.PointsMaterial
+  mat.opacity = THREE.MathUtils.lerp(mat.opacity, targetOpacity, 0.05)
+  
+  if (type === 'none') return
+
+  mat.map = type === 'rain' ? textures.rain : textures.snow
+  mat.size = type === 'rain' ? 0.15 : 0.1
+
+  for (let i = 0; i < CONFIG.PARTICLE_COUNT; i++) {
+    const idx = i * 3
+    if (type === 'rain') {
+      posArr[idx + 1] -= CONFIG.RAIN_SPEED * velArr[i]
+      if (posArr[idx + 1] < -15) posArr[idx + 1] = 15
+    } else if (type === 'snow') {
+      posArr[idx + 1] -= CONFIG.SNOW_SPEED * velArr[i]
+      posArr[idx] += Math.sin(time + posArr[idx + 1]) * 0.01
+      if (posArr[idx + 1] < -15) posArr[idx + 1] = 15
+    } else if (type === 'mist') {
+       posArr[idx + 1] -= 0.005
+       posArr[idx] += Math.cos(time * 0.5 + posArr[idx + 2]) * 0.005
+       if (posArr[idx + 1] < -15) posArr[idx + 1] = 15
+    }
+  }
+  particleSystem.geometry.attributes.position.needsUpdate = true
+}
+
+function handleLightning(time: number) {
+  if (!currentTargetStyle.isStormy) {
+    mainLight.intensity = THREE.MathUtils.lerp(mainLight.intensity, currentTargetStyle.lightIntensity, 0.1)
+    return
+  }
+
+  if (time > lightningTime) {
+    // Trigger Flash
+    mainLight.intensity = 5 + Math.random() * 5
+    lightningTime = time + Math.random() * 4 + 2
+  } else {
+    mainLight.intensity = THREE.MathUtils.lerp(mainLight.intensity, currentTargetStyle.lightIntensity, 0.05)
+  }
+}
+
+function lerpState() {
+  const style = currentTargetStyle
+  if (skyMaterial) {
+    skyMaterial.uniforms.topColor.value.lerp(style.topColor, CONFIG.TRANSITION_SPEED)
+    skyMaterial.uniforms.bottomColor.value.lerp(style.bottomColor, CONFIG.TRANSITION_SPEED)
+  }
+  
+  if (scene.fog instanceof THREE.FogExp2) {
+    scene.fog.color.lerp(style.fogColor, CONFIG.TRANSITION_SPEED)
+    scene.fog.density = THREE.MathUtils.lerp(scene.fog.density, style.fogDensity, CONFIG.TRANSITION_SPEED)
+  } else {
+    scene.fog = new THREE.FogExp2(style.fogColor.getHex(), style.fogDensity)
+  }
+}
+
+function updateTargetState(type: WeatherType) {
+  currentTargetStyle = WEATHER_STYLES[type] || WEATHER_STYLES.sunny
+}
+
 function onWindowResize() {
   if (!container.value || !camera || !renderer) return
-
   camera.aspect = container.value.clientWidth / container.value.clientHeight
   camera.updateProjectionMatrix()
   renderer.setSize(container.value.clientWidth, container.value.clientHeight)
 }
 
-// 逐帧动画
-function animate() {
-  animationId = requestAnimationFrame(animate)
-
-  const time = Date.now() * 0.001
-
-  if (weatherSystem) {
-    if (weatherType.value === 'rainy') {
-      animateRain(weatherSystem as THREE.Points)
-    } else if (weatherType.value === 'snowy') {
-      animateSnow(weatherSystem as THREE.Points, time)
-    } else if (weatherType.value === 'cloudy') {
-      animateClouds(weatherSystem, time)
-    } else if (weatherType.value === 'sunny') {
-      animateSun(weatherSystem, time)
-    }
-  }
-
-  // 动画化天空着色器
-  if (skyMesh && skyMesh.material instanceof THREE.ShaderMaterial) {
-    skyMesh.material.uniforms.uTime.value = time
-  }
-
-  renderer.render(scene, camera)
-}
-
-// --- 具体气象动画逻辑 ---
-
-// 降雨动画
-function animateRain(system: THREE.Points) {
-  const positions = system.geometry.attributes.position.array as Float32Array
-  const speed = 0.8
-
-  for (let i = 1; i < positions.length; i += 3) {
-    positions[i] -= speed
-    if (positions[i] < -10) {
-      positions[i] = 10
-    }
-  }
-  system.geometry.attributes.position.needsUpdate = true
-}
-
-// 下雪动画
-function animateSnow(system: THREE.Points, time: number) {
-  const positions = system.geometry.attributes.position.array as Float32Array
-  const speed = 0.02
-
-  for (let i = 0; i < positions.length; i += 3) {
-    positions[i + 1] -= speed // 纵向移动
-    positions[i] += Math.sin(time + positions[i + 1]) * 0.005 // 横向微晃
-    if (positions[i + 1] < -10) {
-      positions[i + 1] = 10
-    }
-  }
-  system.geometry.attributes.position.needsUpdate = true
-}
-
-// 云层移动动画
-function animateClouds(system: THREE.Object3D, time: number) {
-  system.children.forEach((cloud, index) => {
-    cloud.position.x -= 0.005
-    if (cloud.position.x < -15) cloud.position.x = 15
-    cloud.position.y += Math.sin(time * 0.5 + index) * 0.002
-  })
-}
-
-// 阳光波动动画
-function animateSun(system: THREE.Object3D, time: number) {
-  const sun = system.children[0]
-  if (sun) {
-    const scale = 4 + Math.sin(time * 2) * 0.1
-    sun.scale.set(scale, scale, 1)
-  }
-}
-
-// --- 天气系统创建与销毁 ---
-
-// 更新当前天气效果
-function updateWeather(type: string) {
-  // 清理现有对象
-  if (weatherSystem) {
-    disposeHierarchy(weatherSystem)
-    scene.remove(weatherSystem)
-    weatherSystem = null
-  }
-  if (skyMesh) {
-    scene.remove(skyMesh)
-    if (skyMesh.geometry) skyMesh.geometry.dispose()
-    if (skyMesh.material) {
-      if (Array.isArray(skyMesh.material)) {
-        skyMesh.material.forEach((m) => m.dispose())
-      } else {
-        skyMesh.material.dispose()
-      }
-    }
-    skyMesh = null
-  }
-  scene.fog = null
-
-  // 根据类型创建新效果
-  switch (type) {
-    case 'sunny':
-      createSunnyWeather()
-      break
-    case 'rainy':
-      createRainyWeather()
-      break
-    case 'cloudy':
-      createCloudyWeather()
-      break
-    case 'snowy':
-      createSnowyWeather()
-      break
-  }
-}
-
-// 创建晴天
-function createSunnyWeather() {
-  const group = new THREE.Group()
-  const material = new THREE.SpriteMaterial({
-    map: sunTexture,
-    color: 0xffdd00,
-    transparent: true,
-    blending: THREE.AdditiveBlending,
-  })
-  const sun = new THREE.Sprite(material)
-  sun.scale.set(4, 4, 1)
-  sun.position.set(2, 3, -5)
-  group.add(sun)
-
-  weatherSystem = group
-  scene.add(weatherSystem)
-  createSkyGradient(0x00bfff, 0x87ceeb)
-}
-
-// 创建雨天
-function createRainyWeather() {
-  const count = 1500
-  const geometry = new THREE.BufferGeometry()
-  const positions = new Float32Array(count * 3)
-
-  for (let i = 0; i < count * 3; i += 3) {
-    positions[i] = (Math.random() - 0.5) * 20
-    positions[i + 1] = (Math.random() - 0.5) * 20
-    positions[i + 2] = (Math.random() - 0.5) * 10
-  }
-
-  geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3))
-  const material = new THREE.PointsMaterial({
-    color: 0xaaaaaa,
-    size: 0.2,
-    map: rainTexture,
-    transparent: true,
-    opacity: 0.6,
-    blending: THREE.AdditiveBlending,
-    depthWrite: false,
-  })
-
-  weatherSystem = new THREE.Points(geometry, material)
-  scene.add(weatherSystem)
-  createSkyGradient(0x1a1a2e, 0x16213e)
-  scene.fog = new THREE.FogExp2(0x16213e, 0.05)
-}
-
-// 创建雪天
-function createSnowyWeather() {
-  const count = 1500
-  const geometry = new THREE.BufferGeometry()
-  const positions = new Float32Array(count * 3)
-
-  for (let i = 0; i < count * 3; i += 3) {
-    positions[i] = (Math.random() - 0.5) * 20
-    positions[i + 1] = (Math.random() - 0.5) * 20
-    positions[i + 2] = (Math.random() - 0.5) * 10
-  }
-
-  geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3))
-  const material = new THREE.PointsMaterial({
-    color: 0xffffff,
-    size: 0.15,
-    map: snowTexture,
-    transparent: true,
-    opacity: 0.8,
-    depthWrite: false,
-  })
-
-  weatherSystem = new THREE.Points(geometry, material)
-  scene.add(weatherSystem)
-  createSkyGradient(0x2c3e50, 0xbdc3c7)
-  scene.fog = new THREE.FogExp2(0xbdc3c7, 0.02)
-}
-
-// 创建阴天
-function createCloudyWeather() {
-  const group = new THREE.Group()
-
-  for (let i = 0; i < 8; i++) {
-    const geo = new THREE.PlaneGeometry(6, 3)
-    const mat = new THREE.MeshBasicMaterial({
-      map: cloudTexture,
-      transparent: true,
-      opacity: 0.6,
-      depthWrite: false,
-    })
-    const cloud = new THREE.Mesh(geo, mat)
-
-    cloud.position.set((Math.random() - 0.5) * 15, Math.random() * 3, (Math.random() - 0.5) * 8 - 2)
-    const scale = Math.random() * 0.5 + 0.8
-    cloud.scale.set(scale, scale, 1)
-
-    group.add(cloud)
-  }
-
-  weatherSystem = group
-  scene.add(weatherSystem)
-  createSkyGradient(0x757f9a, 0xd7dde8)
-}
-
-// --- 辅助工具函数 ---
-
-// 创建天空背景色渐变器
-function createSkyGradient(colorTop: number, colorBottom: number) {
-  const vertexShader = `
-      varying vec2 vUv;
-      void main() {
-        vUv = uv;
-        gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
-      }
-    `
-  const fragmentShader = `
-      uniform vec3 topColor;
-      uniform vec3 bottomColor;
-      uniform float uTime;
-      varying vec2 vUv;
-      void main() {
-        float v = vUv.y;
-        vec3 col = mix(bottomColor, topColor, v);
-        // 添加细微的暗角和大气深度感
-        float vignette = 1.0 - smoothstep(0.5, 1.5, length(vUv - 0.5));
-        gl_FragColor = vec4(col * (0.8 + 0.2 * vignette), 1.0);
-      }
-    `
-
-  const uniforms = {
-    topColor: { value: new THREE.Color(colorTop) },
-    bottomColor: { value: new THREE.Color(colorBottom) },
-    uTime: { value: 0 },
-  }
-
-  const geometry = new THREE.SphereGeometry(50, 32, 32)
-  const material = new THREE.ShaderMaterial({
-    vertexShader,
-    fragmentShader,
-    uniforms,
-    depthWrite: false,
-    side: THREE.BackSide,
-  })
-
-  skyMesh = new THREE.Mesh(geometry, material)
-  scene.add(skyMesh)
-}
-
-// 递归销毁 3D 对象以释放内存
-function disposeHierarchy(obj: THREE.Object3D) {
-  if (!obj) return
-  obj.children.forEach((child) => disposeHierarchy(child))
-  if ((obj as THREE.Mesh).geometry) {
-    ;(obj as THREE.Mesh).geometry.dispose()
-  }
-  if ((obj as THREE.Mesh).material) {
-    const material = (obj as THREE.Mesh).material
-    if (Array.isArray(material)) {
-      material.forEach((m: any) => {
-        if (m.map) m.map.dispose()
-        m.dispose()
-      })
-    } else {
-      const m = material as any
-      if (m.map) m.map.dispose()
-      m.dispose()
-    }
-  }
-}
-
-// --- 纹理生成器 (Canvas) ---
-
-function createCloudTexture() {
+// --- Textures Generators ---
+function createSmokeTexture() {
   const canvas = document.createElement('canvas')
   canvas.width = 128
   canvas.height = 128
-  const context = canvas.getContext('2d')!
-  const gradient = context.createRadialGradient(64, 64, 0, 64, 64, 64)
-  gradient.addColorStop(0, 'rgba(255, 255, 255, 0.9)')
-  gradient.addColorStop(0.4, 'rgba(255, 255, 255, 0.5)')
+  const ctx = canvas.getContext('2d')!
+  const gradient = ctx.createRadialGradient(64, 64, 0, 64, 64, 64)
+  gradient.addColorStop(0, 'rgba(255, 255, 255, 0.8)')
+  gradient.addColorStop(0.3, 'rgba(200, 200, 200, 0.3)')
   gradient.addColorStop(1, 'rgba(255, 255, 255, 0)')
-  context.fillStyle = gradient
-  context.fillRect(0, 0, 128, 128)
+  ctx.fillStyle = gradient
+  ctx.fillRect(0, 0, 128, 128)
   return new THREE.CanvasTexture(canvas)
 }
 
-function createDropTexture() {
+function createRainTexture() {
   const canvas = document.createElement('canvas')
-  canvas.width = 32
-  canvas.height = 32
-  const context = canvas.getContext('2d')!
-  context.fillStyle = 'rgba(255,255,255,0.8)'
-  context.beginPath()
-  context.ellipse(16, 16, 2, 8, 0, 0, Math.PI * 2)
-  context.fill()
+  canvas.width = 16
+  canvas.height = 64
+  const ctx = canvas.getContext('2d')!
+  const g = ctx.createLinearGradient(8, 0, 8, 64)
+  g.addColorStop(0, 'rgba(255,255,255,0)')
+  g.addColorStop(0.5, 'rgba(255,255,255,0.8)')
+  g.addColorStop(1, 'rgba(255,255,255,0)')
+  ctx.fillStyle = g
+  ctx.fillRect(0, 0, 16, 64)
   return new THREE.CanvasTexture(canvas)
 }
 
@@ -384,49 +404,31 @@ function createSnowTexture() {
   const canvas = document.createElement('canvas')
   canvas.width = 32
   canvas.height = 32
-  const context = canvas.getContext('2d')!
-  const gradient = context.createRadialGradient(16, 16, 0, 16, 16, 16)
-  gradient.addColorStop(0, 'rgba(255, 255, 255, 1)')
-  gradient.addColorStop(1, 'rgba(255, 255, 255, 0)')
-  context.fillStyle = gradient
-  context.fillRect(0, 0, 32, 32)
-  return new THREE.CanvasTexture(canvas)
-}
-
-function createSunTexture() {
-  const canvas = document.createElement('canvas')
-  canvas.width = 64
-  canvas.height = 64
   const ctx = canvas.getContext('2d')!
-  const g = ctx.createRadialGradient(32, 32, 0, 32, 32, 32)
+  const g = ctx.createRadialGradient(16, 16, 0, 16, 16, 16)
   g.addColorStop(0, 'rgba(255, 255, 255, 1)')
-  g.addColorStop(0.2, 'rgba(255, 255, 200, 1)')
-  g.addColorStop(0.5, 'rgba(255, 200, 0, 0.5)')
-  g.addColorStop(1, 'rgba(255, 200, 0, 0)')
+  g.addColorStop(1, 'rgba(255, 255, 255, 0)')
   ctx.fillStyle = g
-  ctx.fillRect(0, 0, 64, 64)
+  ctx.fillRect(0, 0, 32, 32)
   return new THREE.CanvasTexture(canvas)
 }
 
-// 监听天气类型变化并更新
-watch(weatherType, (newVal) => {
-  updateWeather(newVal)
-})
+watch(weatherType, (newVal) => updateTargetState(newVal))
 
-onMounted(() => {
-  init()
-})
-
+onMounted(() => init())
 onUnmounted(() => {
   window.removeEventListener('resize', onWindowResize)
   cancelAnimationFrame(animationId)
   if (renderer) renderer.dispose()
-  if (scene) {
-    disposeHierarchy(scene)
-  }
 })
 </script>
 
 <template>
-  <div ref="container" class="absolute inset-0 z-0 w-full h-full bg-black"></div>
+  <div ref="container" class="absolute inset-0 z-0 w-full h-full bg-[#050505]"></div>
 </template>
+
+<style scoped>
+div {
+  touch-action: none;
+}
+</style>

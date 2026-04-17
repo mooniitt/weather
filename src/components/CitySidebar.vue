@@ -26,10 +26,14 @@ function onSelect(id: string) {
 // 获取天气对应的图标 (对接新数据字段 weather)
 const getWeatherIcon = (weather: string) => {
   const lower = weather.toLowerCase()
-  if (lower.includes('cloud') || lower.includes('多云') || lower.includes('阴')) return 'cloud'
+  if (lower.includes('thunder') || lower.includes('雷')) return 'thunderstorm'
+  if (lower.includes('cloud') || lower.includes('多云')) return 'cloud'
+  if (lower.includes('overcast') || lower.includes('阴')) return 'dark_mode'
   if (lower.includes('rain') || lower.includes('雨')) return 'rainy'
   if (lower.includes('sunny') || lower.includes('clear') || lower.includes('晴')) return 'wb_sunny'
   if (lower.includes('snow') || lower.includes('雪')) return 'ac_unit'
+  if (lower.includes('fog') || lower.includes('mist') || lower.includes('雾')) return 'foggy'
+  if (lower.includes('haze') || lower.includes('霾')) return 'dehaze'
   return 'filter_drama'
 }
 
@@ -40,6 +44,11 @@ const getAtmosphereClass = (type: string) => {
     case 'rainy': return 'bg-gradient-to-br from-blue-600/30 to-indigo-900/10'
     case 'snowy': return 'bg-gradient-to-br from-slate-100/30 to-slate-400/10'
     case 'cloudy': return 'bg-gradient-to-br from-slate-400/30 to-slate-700/10'
+    case 'thunderstorm': return 'bg-gradient-to-br from-purple-900/40 to-slate-900/20'
+    case 'overcast': return 'bg-gradient-to-br from-slate-700/40 to-slate-900/20'
+    case 'foggy':
+    case 'mist': return 'bg-gradient-to-br from-slate-300/20 to-slate-500/10'
+    case 'haze': return 'bg-gradient-to-br from-orange-900/20 to-slate-800/10'
     default: return 'bg-white/10'
   }
 }
