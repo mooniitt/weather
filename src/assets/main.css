@@ -1,35 +1,154 @@
-@import './base.css';
+@import "tailwindcss";
 
-#app {
-  /* max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
-  font-weight: normal; */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700&family=Outfit:wght@100;200;300;400;500;600;700&display=swap');
+
+:root {
+  --glass-bg: rgba(18, 18, 20, 0.45);
+  --glass-bg-accent: rgba(255, 255, 255, 0.05);
+  --glass-border: rgba(255, 255, 255, 0.1);
+  --glass-blur: 40px;
 }
 
-a,
-.green {
-  text-decoration: none;
-  color: hsla(160, 100%, 37%, 1);
-  transition: 0.4s;
-  padding: 3px;
-}
-
-@media (hover: hover) {
-  a:hover {
-    background-color: hsla(160, 100%, 37%, 0.2);
-  }
-}
-
-@media (min-width: 1024px) {
+@layer base {
   body {
-    /* display: flex; */
-    /* place-items: center; */
+    background-color: black;
+    color: white;
+    /* Apple 风格的亚像素抗锯齿优化 */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    /* 严格对齐 Apple 官网的字体栈 */
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", "Helvetica Neue", Helvetica, Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    letter-spacing: -0.01em; /* Apple 字体特有的略微紧凑感 */
+  }
+}
+
+@layer components {
+  .glass-panel {
+    background: var(--glass-bg);
+    backdrop-filter: blur(var(--glass-blur));
+    -webkit-backdrop-filter: blur(var(--glass-blur));
+    border: 1px solid var(--glass-border);
+    @apply shadow-[0_8px_32px_rgba(0,0,0,0.3)] transition-all duration-300;
   }
 
-  #app {
-    /* display: grid;
-    grid-template-columns: 1fr 1fr;
-    padding: 0 2rem; */
+  .glass-card-hover {
+    @apply hover:bg-white/5 hover:border-white/20 transition-all duration-300;
   }
+
+  .vibrant-blue-shadow {
+    box-shadow: 0 0 20px rgba(56, 189, 248, 0.2);
+  }
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes slow-rotate {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.animate-slow-rotate {
+  animation: slow-rotate 12s linear infinite;
+}
+
+/* 极致 UI-UX-MAX 设计系统令牌 */
+:root {
+  --glass-border: rgba(255, 255, 255, 0.12);
+  --glass-border-inner: rgba(255, 255, 255, 0.05);
+  --glass-bg: rgba(255, 255, 255, 0.03);
+  --accent-blue: #38bdf8;
+  --vibrant-glow: rgba(56, 189, 248, 0.3);
+}
+
+.glass-panel {
+  background: var(--glass-bg);
+  backdrop-filter: blur(40px);
+  -webkit-backdrop-filter: blur(40px);
+  border: 1px solid var(--glass-border);
+  box-shadow: inset 0 1px 1px var(--glass-border-inner);
+}
+
+/* 极致玻璃卡片样式：多层边框与内发光 */
+.glass-card-max {
+  background: rgba(255, 255, 255, 0.02);
+  backdrop-filter: blur(30px);
+  -webkit-backdrop-filter: blur(30px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 
+    inset 0 0 12px rgba(255, 255, 255, 0.02),
+    0 10px 30px -10px rgba(0, 0, 0, 0.3);
+  transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.glass-card-max:hover {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.15);
+  transform: translateY(-2px) translateZ(0);
+}
+
+/* 选中态的极致辉光 */
+.glass-card-selected {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(56, 189, 248, 0.4);
+  box-shadow: 
+    0 0 0 1px rgba(56, 189, 248, 0.2),
+    0 20px 40px -10px rgba(0, 0, 0, 0.5),
+    inset 0 0 20px rgba(56, 189, 248, 0.05);
+}
+
+/* 氛围层动态渐变 */
+@keyframes atmosphere-drift {
+  0% { transform: translate(-10%, -10%) scale(1); }
+  50% { transform: translate(10%, 10%) scale(1.1); }
+  100% { transform: translate(-10%, -10%) scale(1); }
+}
+
+.atmosphere-layer {
+  position: absolute;
+  inset: -20%;
+  filter: blur(40px);
+  opacity: 0.3;
+  pointer-events: none;
+  animation: atmosphere-drift 15s ease-in-out infinite;
+}
+
+.vibrant-blue-shadow {
+  box-shadow: 0 0 20px -5px var(--accent-blue);
+}
+
+/* 隐藏滚动条但保留功能 */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* 自定义纤细滚动条 */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 3px;
+}
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 10px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.15);
+}
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.25);
 }

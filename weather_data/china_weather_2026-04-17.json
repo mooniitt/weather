@@ -1,0 +1,488 @@
+{
+  "country": "中国",
+  "date": "2026-04-17",
+  "updateTime": "2026-04-17 14:00",
+  "dataSource": "wttr.in",
+  "cities": [
+    {
+      "name": "北京市",
+      "pinyin": "Beijing",
+      "province": "北京",
+      "current": {"temperature": "19°C", "feelsLike": "19°C", "weather": "薄雾 (Mist)", "humidity": "68%", "wind": "SSW 6km/h", "pressure": "1012 hPa", "uvIndex": 6},
+      "hourly": [
+        {"time": "00:00", "temp": "15°C", "weather": "Clear", "humidity": "73%"},
+        {"time": "03:00", "temp": "14°C", "weather": "Clear", "humidity": "73%"},
+        {"time": "06:00", "temp": "13°C", "weather": "Sunny", "humidity": "73%"},
+        {"time": "09:00", "temp": "16°C", "weather": "Sunny", "humidity": "73%"},
+        {"time": "12:00", "temp": "19°C", "weather": "Mist", "humidity": "68%"},
+        {"time": "15:00", "temp": "21°C", "weather": "Sunny", "humidity": "73%"},
+        {"time": "18:00", "temp": "19°C", "weather": "Sunny", "humidity": "73%"},
+        {"time": "21:00", "temp": "16°C", "weather": "Clear", "humidity": "73%"}
+      ]
+    },
+    {
+      "name": "上海市",
+      "pinyin": "Shanghai",
+      "province": "上海",
+      "current": {"temperature": "20°C", "feelsLike": "20°C", "weather": "多云 (Partly cloudy)", "humidity": "72%", "wind": "S 11km/h", "pressure": "1013 hPa", "uvIndex": 5},
+      "hourly": [
+        {"time": "00:00", "temp": "18°C", "weather": "Mist", "humidity": "94%"},
+        {"time": "03:00", "temp": "18°C", "weather": "Mist", "humidity": "94%"},
+        {"time": "06:00", "temp": "18°C", "weather": "Mist", "humidity": "94%"},
+        {"time": "09:00", "temp": "19°C", "weather": "Overcast", "humidity": "94%"},
+        {"time": "12:00", "temp": "20°C", "weather": "Partly cloudy", "humidity": "72%"},
+        {"time": "15:00", "temp": "20°C", "weather": "Sunny", "humidity": "72%"},
+        {"time": "18:00", "temp": "19°C", "weather": "Sunny", "humidity": "72%"},
+        {"time": "21:00", "temp": "18°C", "weather": "Clear", "humidity": "72%"}
+      ]
+    },
+    {
+      "name": "广州市",
+      "pinyin": "Guangzhou",
+      "province": "广东",
+      "current": {"temperature": "27°C", "feelsLike": "29°C", "weather": "多云 (Partly cloudy)", "humidity": "74%", "wind": "S 13km/h", "pressure": "1013 hPa", "uvIndex": 10},
+      "hourly": [
+        {"time": "00:00", "temp": "24°C", "weather": "Light rain", "humidity": "94%"},
+        {"time": "03:00", "temp": "23°C", "weather": "Light rain", "humidity": "94%"},
+        {"time": "06:00", "temp": "23°C", "weather": "Light rain", "humidity": "94%"},
+        {"time": "09:00", "temp": "24°C", "weather": "Light rain", "humidity": "94%"},
+        {"time": "12:00", "temp": "27°C", "weather": "Partly cloudy", "humidity": "74%"},
+        {"time": "15:00", "temp": "26°C", "weather": "Sunny", "humidity": "74%"},
+        {"time": "18:00", "temp": "26°C", "weather": "Sunny", "humidity": "74%"},
+        {"time": "21:00", "temp": "25°C", "weather": "Clear", "humidity": "78%"}
+      ]
+    },
+    {
+      "name": "深圳市",
+      "pinyin": "Shenzhen",
+      "province": "广东",
+      "current": {"temperature": "28°C", "feelsLike": "30°C", "weather": "多云 (Partly Cloudy)", "humidity": "69%", "wind": "SSE 10km/h", "pressure": "1012 hPa", "uvIndex": 11},
+      "hourly": [
+        {"time": "00:00", "temp": "24°C", "weather": "Light rain", "humidity": "89%"},
+        {"time": "03:00", "temp": "24°C", "weather": "Light rain", "humidity": "89%"},
+        {"time": "06:00", "temp": "24°C", "weather": "Light rain", "humidity": "89%"},
+        {"time": "09:00", "temp": "25°C", "weather": "Light rain", "humidity": "89%"},
+        {"time": "12:00", "temp": "28°C", "weather": "Partly Cloudy", "humidity": "69%"},
+        {"time": "15:00", "temp": "26°C", "weather": "Sunny", "humidity": "73%"},
+        {"time": "18:00", "temp": "26°C", "weather": "Partly Cloudy", "humidity": "73%"},
+        {"time": "21:00", "temp": "25°C", "weather": "Clear", "humidity": "78%"}
+      ]
+    },
+    {
+      "name": "成都市",
+      "pinyin": "Chengdu",
+      "province": "四川",
+      "current": {"temperature": "25°C", "feelsLike": "26°C", "weather": "晴天 (Sunny)", "humidity": "47%", "wind": "S 13km/h", "pressure": "1015 hPa", "uvIndex": 10},
+      "hourly": [
+        {"time": "00:00", "temp": "20°C", "weather": "Overcast", "humidity": "78%"},
+        {"time": "03:00", "temp": "20°C", "weather": "Overcast", "humidity": "78%"},
+        {"time": "06:00", "temp": "19°C", "weather": "Overcast", "humidity": "78%"},
+        {"time": "09:00", "temp": "20°C", "weather": "Overcast", "humidity": "78%"},
+        {"time": "12:00", "temp": "25°C", "weather": "Sunny", "humidity": "47%"},
+        {"time": "15:00", "temp": "27°C", "weather": "Sunny", "humidity": "48%"},
+        {"time": "18:00", "temp": "28°C", "weather": "Sunny", "humidity": "48%"},
+        {"time": "21:00", "temp": "26°C", "weather": "Clear", "humidity": "55%"}
+      ]
+    },
+    {
+      "name": "杭州市",
+      "pinyin": "Hangzhou",
+      "province": "浙江",
+      "current": {"temperature": "21°C", "feelsLike": "21°C", "weather": "薄雾 (Mist)", "humidity": "73%", "wind": "NNE 8km/h", "pressure": "1015 hPa", "uvIndex": 5},
+      "hourly": [
+        {"time": "00:00", "temp": "17°C", "weather": "Mist", "humidity": "97%"},
+        {"time": "03:00", "temp": "16°C", "weather": "Mist", "humidity": "97%"},
+        {"time": "06:00", "temp": "16°C", "weather": "Mist", "humidity": "97%"},
+        {"time": "09:00", "temp": "17°C", "weather": "Overcast", "humidity": "97%"},
+        {"time": "12:00", "temp": "21°C", "weather": "Mist", "humidity": "73%"},
+        {"time": "15:00", "temp": "24°C", "weather": "Sunny", "humidity": "56%"},
+        {"time": "18:00", "temp": "21°C", "weather": "Sunny", "humidity": "55%"},
+        {"time": "21:00", "temp": "18°C", "weather": "Clear", "humidity": "60%"}
+      ]
+    },
+    {
+      "name": "重庆市",
+      "pinyin": "Chongqing",
+      "province": "重庆",
+      "current": {"temperature": "25°C", "feelsLike": "25°C", "weather": "晴天 (Sunny)", "humidity": "39%", "wind": "NE 6km/h", "pressure": "1013 hPa", "uvIndex": 9},
+      "hourly": [
+        {"time": "00:00", "temp": "19°C", "weather": "Clear", "humidity": "78%"},
+        {"time": "03:00", "temp": "19°C", "weather": "Clear", "humidity": "78%"},
+        {"time": "06:00", "temp": "18°C", "weather": "Clear", "humidity": "78%"},
+        {"time": "09:00", "temp": "20°C", "weather": "Sunny", "humidity": "78%"},
+        {"time": "12:00", "temp": "25°C", "weather": "Sunny", "humidity": "39%"},
+        {"time": "15:00", "temp": "26°C", "weather": "Sunny", "humidity": "39%"},
+        {"time": "18:00", "temp": "27°C", "weather": "Sunny", "humidity": "39%"},
+        {"time": "21:00", "temp": "25°C", "weather": "Clear", "humidity": "55%"}
+      ]
+    },
+    {
+      "name": "武汉市",
+      "pinyin": "Wuhan",
+      "province": "湖北",
+      "current": {"temperature": "26°C", "feelsLike": "27°C", "weather": "晴天 (Sunny)", "humidity": "47%", "wind": "ESE 10km/h", "pressure": "1012 hPa", "uvIndex": 8},
+      "hourly": [
+        {"time": "00:00", "temp": "20°C", "weather": "Clear", "humidity": "84%"},
+        {"time": "03:00", "temp": "19°C", "weather": "Clear", "humidity": "84%"},
+        {"time": "06:00", "temp": "19°C", "weather": "Clear", "humidity": "84%"},
+        {"time": "09:00", "temp": "21°C", "weather": "Sunny", "humidity": "84%"},
+        {"time": "12:00", "temp": "26°C", "weather": "Sunny", "humidity": "47%"},
+        {"time": "15:00", "temp": "28°C", "weather": "Sunny", "humidity": "48%"},
+        {"time": "18:00", "temp": "28°C", "weather": "Sunny", "humidity": "48%"},
+        {"time": "21:00", "temp": "26°C", "weather": "Clear", "humidity": "55%"}
+      ]
+    },
+    {
+      "name": "西安市",
+      "pinyin": "Xian",
+      "province": "陕西",
+      "current": {"temperature": "26°C", "feelsLike": "25°C", "weather": "晴天 (Sunny)", "humidity": "26%", "wind": "ENE 9km/h", "pressure": "1014 hPa", "uvIndex": 8},
+      "hourly": [
+        {"time": "00:00", "temp": "17°C", "weather": "Clear", "humidity": "40%"},
+        {"time": "03:00", "temp": "16°C", "weather": "Clear", "humidity": "40%"},
+        {"time": "06:00", "temp": "15°C", "weather": "Sunny", "humidity": "40%"},
+        {"time": "09:00", "temp": "18°C", "weather": "Sunny", "humidity": "40%"},
+        {"time": "12:00", "temp": "26°C", "weather": "Sunny", "humidity": "26%"},
+        {"time": "15:00", "temp": "27°C", "weather": "Sunny", "humidity": "18%"},
+        {"time": "18:00", "temp": "23°C", "weather": "Overcast", "humidity": "18%"},
+        {"time": "21:00", "temp": "20°C", "weather": "Clear", "humidity": "32%"}
+      ]
+    },
+    {
+      "name": "天津市",
+      "pinyin": "Tianjin",
+      "province": "天津",
+      "current": {"temperature": "19°C", "feelsLike": "19°C", "weather": "薄雾 (Mist)", "humidity": "72%", "wind": "SSW 7km/h", "pressure": "1012 hPa", "uvIndex": 5},
+      "hourly": [
+        {"time": "00:00", "temp": "15°C", "weather": "Clear", "humidity": "73%"},
+        {"time": "03:00", "temp": "14°C", "weather": "Clear", "humidity": "73%"},
+        {"time": "06:00", "temp": "13°C", "weather": "Sunny", "humidity": "73%"},
+        {"time": "09:00", "temp": "16°C", "weather": "Sunny", "humidity": "73%"},
+        {"time": "12:00", "temp": "19°C", "weather": "Mist", "humidity": "72%"},
+        {"time": "15:00", "temp": "21°C", "weather": "Sunny", "humidity": "73%"},
+        {"time": "18:00", "temp": "19°C", "weather": "Sunny", "humidity": "73%"},
+        {"time": "21:00", "temp": "16°C", "weather": "Clear", "humidity": "73%"}
+      ]
+    },
+    {
+      "name": "南京市",
+      "pinyin": "Nanjing",
+      "province": "江苏",
+      "current": {"temperature": "21°C", "feelsLike": "21°C", "weather": "薄雾 (Mist)", "humidity": "73%", "wind": "NNE 7km/h", "pressure": "1015 hPa", "uvIndex": 6},
+      "hourly": [
+        {"time": "00:00", "temp": "17°C", "weather": "Mist", "humidity": "97%"},
+        {"time": "03:00", "temp": "16°C", "weather": "Mist", "humidity": "97%"},
+        {"time": "06:00", "temp": "16°C", "weather": "Mist", "humidity": "97%"},
+        {"time": "09:00", "temp": "17°C", "weather": "Overcast", "humidity": "97%"},
+        {"time": "12:00", "temp": "21°C", "weather": "Mist", "humidity": "73%"},
+        {"time": "15:00", "temp": "24°C", "weather": "Sunny", "humidity": "56%"},
+        {"time": "18:00", "temp": "21°C", "weather": "Sunny", "humidity": "55%"},
+        {"time": "21:00", "temp": "18°C", "weather": "Clear", "humidity": "60%"}
+      ]
+    },
+    {
+      "name": "沈阳市",
+      "pinyin": "Shenyang",
+      "province": "辽宁",
+      "current": {"temperature": "20°C", "feelsLike": "20°C", "weather": "晴天 (Sunny)", "humidity": "32%", "wind": "WSW 21km/h", "pressure": "1008 hPa", "uvIndex": 7},
+      "hourly": [
+        {"time": "00:00", "temp": "11°C", "weather": "Clear", "humidity": "32%"},
+        {"time": "03:00", "temp": "11°C", "weather": "Clear", "humidity": "32%"},
+        {"time": "06:00", "temp": "11°C", "weather": "Sunny", "humidity": "32%"},
+        {"time": "09:00", "temp": "15°C", "weather": "Sunny", "humidity": "32%"},
+        {"time": "12:00", "temp": "20°C", "weather": "Sunny", "humidity": "32%"},
+        {"time": "15:00", "temp": "23°C", "weather": "Overcast", "humidity": "18%"},
+        {"time": "18:00", "temp": "23°C", "weather": "Overcast", "humidity": "18%"},
+        {"time": "21:00", "temp": "20°C", "weather": "Clear", "humidity": "32%"}
+      ]
+    },
+    {
+      "name": "哈尔滨市",
+      "pinyin": "Harbin",
+      "province": "黑龙江",
+      "current": {"temperature": "10°C", "feelsLike": "8°C", "weather": "小雨 (Light drizzle)", "humidity": "92%", "wind": "S 12km/h", "pressure": "1008 hPa", "uvIndex": 0},
+      "hourly": [
+        {"time": "00:00", "temp": "11°C", "weather": "Cloudy", "humidity": "33%"},
+        {"time": "03:00", "temp": "11°C", "weather": "Cloudy", "humidity": "33%"},
+        {"time": "06:00", "temp": "10°C", "weather": "Cloudy", "humidity": "33%"},
+        {"time": "09:00", "temp": "10°C", "weather": "Light drizzle", "humidity": "92%"},
+        {"time": "12:00", "temp": "10°C", "weather": "Light drizzle", "humidity": "92%"},
+        {"time": "15:00", "temp": "25°C", "weather": "Sunny", "humidity": "35%"},
+        {"time": "18:00", "temp": "25°C", "weather": "Sunny", "humidity": "35%"},
+        {"time": "21:00", "temp": "17°C", "weather": "Light rain", "humidity": "82%"}
+      ]
+    },
+    {
+      "name": "大连市",
+      "pinyin": "Dalian",
+      "province": "辽宁",
+      "current": {"temperature": "16°C", "feelsLike": "16°C", "weather": "晴天 (Sunny)", "humidity": "42%", "wind": "S 14km/h", "pressure": "1009 hPa", "uvIndex": 7},
+      "hourly": [
+        {"time": "00:00", "temp": "11°C", "weather": "Clear", "humidity": "42%"},
+        {"time": "03:00", "temp": "10°C", "weather": "Clear", "humidity": "42%"},
+        {"time": "06:00", "temp": "10°C", "weather": "Sunny", "humidity": "42%"},
+        {"time": "09:00", "temp": "12°C", "weather": "Sunny", "humidity": "42%"},
+        {"time": "12:00", "temp": "16°C", "weather": "Sunny", "humidity": "42%"},
+        {"time": "15:00", "temp": "18°C", "weather": "Sunny", "humidity": "37%"},
+        {"time": "18:00", "temp": "18°C", "weather": "Sunny", "humidity": "37%"},
+        {"time": "21:00", "temp": "16°C", "weather": "Clear", "humidity": "42%"}
+      ]
+    },
+    {
+      "name": "青岛市",
+      "pinyin": "Qingdao",
+      "province": "山东",
+      "current": {"temperature": "17°C", "feelsLike": "17°C", "weather": "晴天 (Sunny)", "humidity": "55%", "wind": "SSW 14km/h", "pressure": "1010 hPa", "uvIndex": 7},
+      "hourly": [
+        {"time": "00:00", "temp": "12°C", "weather": "Clear", "humidity": "55%"},
+        {"time": "03:00", "temp": "12°C", "weather": "Clear", "humidity": "55%"},
+        {"time": "06:00", "temp": "12°C", "weather": "Sunny", "humidity": "55%"},
+        {"time": "09:00", "temp": "14°C", "weather": "Sunny", "humidity": "55%"},
+        {"time": "12:00", "temp": "17°C", "weather": "Sunny", "humidity": "55%"},
+        {"time": "15:00", "temp": "19°C", "weather": "Sunny", "humidity": "50%"},
+        {"time": "18:00", "temp": "19°C", "weather": "Sunny", "humidity": "50%"},
+        {"time": "21:00", "temp": "17°C", "weather": "Clear", "humidity": "55%"}
+      ]
+    },
+    {
+      "name": "济南市",
+      "pinyin": "Jinan",
+      "province": "山东",
+      "current": {"temperature": "28°C", "feelsLike": "28°C", "weather": "晴天 (Sunny)", "humidity": "30%", "wind": "SSW 25km/h", "pressure": "1009 hPa", "uvIndex": 9},
+      "hourly": [
+        {"time": "00:00", "temp": "16°C", "weather": "Clear", "humidity": "82%"},
+        {"time": "03:00", "temp": "16°C", "weather": "Clear", "humidity": "82%"},
+        {"time": "06:00", "temp": "16°C", "weather": "Clear", "humidity": "82%"},
+        {"time": "09:00", "temp": "20°C", "weather": "Sunny", "humidity": "82%"},
+        {"time": "12:00", "temp": "28°C", "weather": "Sunny", "humidity": "30%"},
+        {"time": "15:00", "temp": "25°C", "weather": "Sunny", "humidity": "35%"},
+        {"time": "18:00", "temp": "25°C", "weather": "Sunny", "humidity": "35%"},
+        {"time": "21:00", "temp": "17°C", "weather": "Light rain", "humidity": "82%"}
+      ]
+    },
+    {
+      "name": "长沙市",
+      "pinyin": "Changsha",
+      "province": "湖南",
+      "current": {"temperature": "24°C", "feelsLike": "26°C", "weather": "局部小雨 (Patchy rain nearby)", "humidity": "61%", "wind": "NNW 10km/h", "pressure": "1014 hPa", "uvIndex": 8},
+      "hourly": [
+        {"time": "00:00", "temp": "17°C", "weather": "Cloudy", "humidity": "94%"},
+        {"time": "03:00", "temp": "17°C", "weather": "Cloudy", "humidity": "94%"},
+        {"time": "06:00", "temp": "17°C", "weather": "Cloudy", "humidity": "94%"},
+        {"time": "09:00", "temp": "18°C", "weather": "Overcast", "humidity": "94%"},
+        {"time": "12:00", "temp": "24°C", "weather": "Patchy rain nearby", "humidity": "61%"},
+        {"time": "15:00", "temp": "23°C", "weather": "Sunny", "humidity": "38%"},
+        {"time": "18:00", "temp": "26°C", "weather": "Sunny", "humidity": "38%"},
+        {"time": "21:00", "temp": "20°C", "weather": "Clear", "humidity": "45%"}
+      ]
+    },
+    {
+      "name": "南昌市",
+      "pinyin": "Nanchang",
+      "province": "江西",
+      "current": {"temperature": "25°C", "feelsLike": "26°C", "weather": "局部小雨 (Patchy rain nearby)", "humidity": "61%", "wind": "N 8km/h", "pressure": "1014 hPa", "uvIndex": 9},
+      "hourly": [
+        {"time": "00:00", "temp": "18°C", "weather": "Cloudy", "humidity": "92%"},
+        {"time": "03:00", "temp": "18°C", "weather": "Cloudy", "humidity": "92%"},
+        {"time": "06:00", "temp": "18°C", "weather": "Cloudy", "humidity": "92%"},
+        {"time": "09:00", "temp": "19°C", "weather": "Overcast", "humidity": "92%"},
+        {"time": "12:00", "temp": "25°C", "weather": "Patchy rain nearby", "humidity": "61%"},
+        {"time": "15:00", "temp": "25°C", "weather": "Sunny", "humidity": "66%"},
+        {"time": "18:00", "temp": "26°C", "weather": "Sunny", "humidity": "66%"},
+        {"time": "21:00", "temp": "24°C", "weather": "Clear", "humidity": "66%"}
+      ]
+    },
+    {
+      "name": "南宁市",
+      "pinyin": "Nanning",
+      "province": "广西",
+      "current": {"temperature": "28°C", "feelsLike": "29°C", "weather": "多云 (Partly cloudy)", "humidity": "61%", "wind": "SSE 13km/h", "pressure": "1010 hPa", "uvIndex": 10},
+      "hourly": [
+        {"time": "00:00", "temp": "22°C", "weather": "Light rain", "humidity": "89%"},
+        {"time": "03:00", "temp": "22°C", "weather": "Light rain", "humidity": "89%"},
+        {"time": "06:00", "temp": "22°C", "weather": "Light rain", "humidity": "89%"},
+        {"time": "09:00", "temp": "23°C", "weather": "Light rain", "humidity": "89%"},
+        {"time": "12:00", "temp": "28°C", "weather": "Partly cloudy", "humidity": "61%"},
+        {"time": "15:00", "temp": "26°C", "weather": "Sunny", "humidity": "74%"},
+        {"time": "18:00", "temp": "26°C", "weather": "Sunny", "humidity": "74%"},
+        {"time": "21:00", "temp": "25°C", "weather": "Clear", "humidity": "81%"}
+      ]
+    },
+    {
+      "name": "昆明市",
+      "pinyin": "Kunming",
+      "province": "云南",
+      "current": {"temperature": "26°C", "feelsLike": "26°C", "weather": "晴天 (Sunny)", "humidity": "26%", "wind": "SW 18km/h", "pressure": "1008 hPa", "uvIndex": 10},
+      "hourly": [
+        {"time": "00:00", "temp": "17°C", "weather": "Clear", "humidity": "45%"},
+        {"time": "03:00", "temp": "16°C", "weather": "Clear", "humidity": "45%"},
+        {"time": "06:00", "temp": "15°C", "weather": "Sunny", "humidity": "45%"},
+        {"time": "09:00", "temp": "18°C", "weather": "Sunny", "humidity": "45%"},
+        {"time": "12:00", "temp": "26°C", "weather": "Sunny", "humidity": "26%"},
+        {"time": "15:00", "temp": "22°C", "weather": "Sunny", "humidity": "38%"},
+        {"time": "18:00", "temp": "22°C", "weather": "Sunny", "humidity": "38%"},
+        {"time": "21:00", "temp": "20°C", "weather": "Clear", "humidity": "45%"}
+      ]
+    },
+    {
+      "name": "福州市",
+      "pinyin": "Fuzhou",
+      "province": "福建",
+      "current": {"temperature": "20°C", "feelsLike": "20°C", "weather": "多云 (Partly cloudy)", "humidity": "94%", "wind": "ESE 6km/h", "pressure": "1013 hPa", "uvIndex": 6},
+      "hourly": [
+        {"time": "00:00", "temp": "19°C", "weather": "Light rain", "humidity": "98%"},
+        {"time": "03:00", "temp": "19°C", "weather": "Light rain", "humidity": "98%"},
+        {"time": "06:00", "temp": "19°C", "weather": "Light rain", "humidity": "98%"},
+        {"time": "09:00", "temp": "19°C", "weather": "Light rain", "humidity": "98%"},
+        {"time": "12:00", "temp": "20°C", "weather": "Partly cloudy", "humidity": "94%"},
+        {"time": "15:00", "temp": "22°C", "weather": "Sunny", "humidity": "81%"},
+        {"time": "18:00", "temp": "22°C", "weather": "Sunny", "humidity": "81%"},
+        {"time": "21:00", "temp": "21°C", "weather": "Clear", "humidity": "81%"}
+      ]
+    },
+    {
+      "name": "长春市",
+      "pinyin": "Changchun",
+      "province": "吉林",
+      "current": {"temperature": "12°C", "feelsLike": "10°C", "weather": "多云 (Partly cloudy)", "humidity": "42%", "wind": "SSW 14km/h", "pressure": "1008 hPa", "uvIndex": 5},
+      "hourly": [
+        {"time": "00:00", "temp": "7°C", "weather": "Clear", "humidity": "42%"},
+        {"time": "03:00", "temp": "7°C", "weather": "Clear", "humidity": "42%"},
+        {"time": "06:00", "temp": "6°C", "weather": "Sunny", "humidity": "42%"},
+        {"time": "09:00", "temp": "9°C", "weather": "Sunny", "humidity": "42%"},
+        {"time": "12:00", "temp": "12°C", "weather": "Partly cloudy", "humidity": "42%"},
+        {"time": "15:00", "temp": "16°C", "weather": "Sunny", "humidity": "30%"},
+        {"time": "18:00", "temp": "16°C", "weather": "Sunny", "humidity": "30%"},
+        {"time": "21:00", "temp": "12°C", "weather": "Clear", "humidity": "42%"}
+      ]
+    },
+    {
+      "name": "太原市",
+      "pinyin": "Taiyuan",
+      "province": "山西",
+      "current": {"temperature": "22°C", "feelsLike": "21°C", "weather": "晴天 (Sunny)", "humidity": "32%", "wind": "SW 11km/h", "pressure": "1008 hPa", "uvIndex": 8},
+      "hourly": [
+        {"time": "00:00", "temp": "11°C", "weather": "Clear", "humidity": "32%"},
+        {"time": "03:00", "temp": "11°C", "weather": "Clear", "humidity": "32%"},
+        {"time": "06:00", "temp": "10°C", "weather": "Sunny", "humidity": "32%"},
+        {"time": "09:00", "temp": "14°C", "weather": "Sunny", "humidity": "32%"},
+        {"time": "12:00", "temp": "22°C", "weather": "Sunny", "humidity": "32%"},
+        {"time": "15:00", "temp": "25°C", "weather": "Sunny", "humidity": "15%"},
+        {"time": "18:00", "temp": "25°C", "weather": "Sunny", "humidity": "15%"},
+        {"time": "21:00", "temp": "20°C", "weather": "Clear", "humidity": "32%"}
+      ]
+    },
+    {
+      "name": "呼和浩特市",
+      "pinyin": "Hohhot",
+      "province": "内蒙古",
+      "current": {"temperature": "13°C", "feelsLike": "8°C", "weather": "晴天 (Sunny)", "humidity": "13%", "wind": "NW 36km/h", "pressure": "1023 hPa", "uvIndex": 6},
+      "hourly": [
+        {"time": "00:00", "temp": "1°C", "weather": "Clear", "humidity": "13%"},
+        {"time": "03:00", "temp": "1°C", "weather": "Clear", "humidity": "13%"},
+        {"time": "06:00", "temp": "1°C", "weather": "Sunny", "humidity": "13%"},
+        {"time": "09:00", "temp": "5°C", "weather": "Sunny", "humidity": "13%"},
+        {"time": "12:00", "temp": "13°C", "weather": "Sunny", "humidity": "13%"},
+        {"time": "15:00", "temp": "4°C", "weather": "Sunny", "humidity": "13%"},
+        {"time": "18:00", "temp": "4°C", "weather": "Sunny", "humidity": "13%"},
+        {"time": "21:00", "temp": "2°C", "weather": "Clear", "humidity": "16%"}
+      ]
+    },
+    {
+      "name": "西宁市",
+      "pinyin": "Xining",
+      "province": "青海",
+      "current": {"temperature": "13°C", "feelsLike": "14°C", "weather": "晴天 (Sunny)", "humidity": "18%", "wind": "NNE 4km/h", "pressure": "1010 hPa", "uvIndex": 8},
+      "hourly": [
+        {"time": "00:00", "temp": "4°C", "weather": "Clear", "humidity": "18%"},
+        {"time": "03:00", "temp": "4°C", "weather": "Clear", "humidity": "18%"},
+        {"time": "06:00", "temp": "3°C", "weather": "Sunny", "humidity": "18%"},
+        {"time": "09:00", "temp": "6°C", "weather": "Sunny", "humidity": "18%"},
+        {"time": "12:00", "temp": "13°C", "weather": "Sunny", "humidity": "18%"},
+        {"time": "15:00", "temp": "16°C", "weather": "Sunny", "humidity": "10%"},
+        {"time": "18:00", "temp": "14°C", "weather": "Overcast", "humidity": "10%"},
+        {"time": "21:00", "temp": "12°C", "weather": "Overcast", "humidity": "18%"}
+      ]
+    },
+    {
+      "name": "乌鲁木齐市",
+      "pinyin": "Urumqi",
+      "province": "新疆",
+      "current": {"temperature": "16°C", "feelsLike": "12°C", "weather": "阴天 (Overcast)", "humidity": "30%", "wind": "N 15km/h", "pressure": "1016 hPa", "uvIndex": 5},
+      "hourly": [
+        {"time": "00:00", "temp": "5°C", "weather": "Clear", "humidity": "30%"},
+        {"time": "03:00", "temp": "5°C", "weather": "Clear", "humidity": "30%"},
+        {"time": "06:00", "temp": "5°C", "weather": "Sunny", "humidity": "30%"},
+        {"time": "09:00", "temp": "8°C", "weather": "Sunny", "humidity": "30%"},
+        {"time": "12:00", "temp": "16°C", "weather": "Overcast", "humidity": "30%"},
+        {"time": "15:00", "temp": "12°C", "weather": "Overcast", "humidity": "18%"},
+        {"time": "18:00", "temp": "14°C", "weather": "Overcast", "humidity": "18%"},
+        {"time": "21:00", "temp": "12°C", "weather": "Overcast", "humidity": "30%"}
+      ]
+    },
+    {
+      "name": "石家庄市",
+      "pinyin": "Shijiazhuang",
+      "province": "河北",
+      "current": {"temperature": "23°C", "feelsLike": "23°C", "weather": "晴天 (Sunny)", "humidity": "57%", "wind": "SE 14km/h", "pressure": "1011 hPa", "uvIndex": 5},
+      "hourly": [
+        {"time": "00:00", "temp": "14°C", "weather": "Cloudy", "humidity": "92%"},
+        {"time": "03:00", "temp": "14°C", "weather": "Cloudy", "humidity": "92%"},
+        {"time": "06:00", "temp": "14°C", "weather": "Cloudy", "humidity": "92%"},
+        {"time": "09:00", "temp": "16°C", "weather": "Overcast", "humidity": "92%"},
+        {"time": "12:00", "temp": "23°C", "weather": "Sunny", "humidity": "57%"},
+        {"time": "15:00", "temp": "25°C", "weather": "Sunny", "humidity": "64%"},
+        {"time": "18:00", "temp": "24°C", "weather": "Sunny", "humidity": "64%"},
+        {"time": "21:00", "temp": "19°C", "weather": "Clear", "humidity": "60%"}
+      ]
+    },
+    {
+      "name": "郑州市",
+      "pinyin": "Zhengzhou",
+      "province": "河南",
+      "current": {"temperature": "27°C", "feelsLike": "27°C", "weather": "晴天 (Sunny)", "humidity": "35%", "wind": "S 14km/h", "pressure": "1008 hPa", "uvIndex": 9},
+      "hourly": [
+        {"time": "00:00", "temp": "16°C", "weather": "Clear", "humidity": "35%"},
+        {"time": "03:00", "temp": "16°C", "weather": "Clear", "humidity": "35%"},
+        {"time": "06:00", "temp": "15°C", "weather": "Sunny", "humidity": "35%"},
+        {"time": "09:00", "temp": "19°C", "weather": "Sunny", "humidity": "35%"},
+        {"time": "12:00", "temp": "27°C", "weather": "Sunny", "humidity": "35%"},
+        {"time": "15:00", "temp": "30°C", "weather": "Sunny", "humidity": "15%"},
+        {"time": "18:00", "temp": "29°C", "weather": "Sunny", "humidity": "15%"},
+        {"time": "21:00", "temp": "22°C", "weather": "Clear", "humidity": "35%"}
+      ]
+    },
+    {
+      "name": "合肥市",
+      "pinyin": "Hefei",
+      "province": "安徽",
+      "current": {"temperature": "23°C", "feelsLike": "23°C", "weather": "晴天 (Sunny)", "humidity": "57%", "wind": "SE 14km/h", "pressure": "1011 hPa", "uvIndex": 5},
+      "hourly": [
+        {"time": "00:00", "temp": "14°C", "weather": "Cloudy", "humidity": "92%"},
+        {"time": "03:00", "temp": "14°C", "weather": "Cloudy", "humidity": "92%"},
+        {"time": "06:00", "temp": "14°C", "weather": "Cloudy", "humidity": "92%"},
+        {"time": "09:00", "temp": "16°C", "weather": "Overcast", "humidity": "92%"},
+        {"time": "12:00", "temp": "23°C", "weather": "Sunny", "humidity": "57%"},
+        {"time": "15:00", "temp": "25°C", "weather": "Sunny", "humidity": "64%"},
+        {"time": "18:00", "temp": "24°C", "weather": "Sunny", "humidity": "64%"},
+        {"time": "21:00", "temp": "19°C", "weather": "Clear", "humidity": "60%"}
+      ]
+    },
+    {
+      "name": "厦门市",
+      "pinyin": "Xiamen",
+      "province": "福建",
+      "current": {"temperature": "24°C", "feelsLike": "26°C", "weather": "晴天 (Sunny)", "humidity": "78%", "wind": "SSE 11km/h", "pressure": "1011 hPa", "uvIndex": 8},
+      "hourly": [
+        {"time": "00:00", "temp": "21°C", "weather": "Overcast", "humidity": "98%"},
+        {"time": "03:00", "temp": "21°C", "weather": "Overcast", "humidity": "98%"},
+        {"time": "06:00", "temp": "21°C", "weather": "Overcast", "humidity": "98%"},
+        {"time": "09:00", "temp": "21°C", "weather": "Overcast", "humidity": "98%"},
+        {"time": "12:00", "temp": "24°C", "weather": "Sunny", "humidity": "78%"},
+        {"time": "15:00", "temp": "22°C", "weather": "Sunny", "humidity": "79%"},
+        {"time": "18:00", "temp": "22°C", "weather": "Sunny", "humidity": "79%"},
+        {"time": "21:00", "temp": "21°C", "weather": "Partly Cloudy", "humidity": "81%"}
+      ]
+    }
+  ]
+}
