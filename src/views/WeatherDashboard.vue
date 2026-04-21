@@ -74,7 +74,14 @@ function toggleSidebar() {
           <div class="hidden md:block"></div> <!-- 桌面端占位符 -->
 
           <div class="flex items-center gap-3">
-             <button class="size-9 rounded-xl bg-white/5 backdrop-blur-md flex items-center justify-center text-white/70 hover:bg-white/10 transition-colors">
+            <button 
+              @click="weatherStore.autoDetectLocation(true)"
+              class="size-10 rounded-xl bg-white/5 backdrop-blur-md flex items-center justify-center text-white/70 hover:bg-white/10 hover:text-sky-400 transition-all active:scale-90 group"
+              title="自动定位"
+            >
+              <span class="material-symbols-outlined text-[22px] group-hover:rotate-[15deg] transition-transform">near_me</span>
+            </button>
+            <button class="size-10 rounded-xl bg-white/5 backdrop-blur-md flex items-center justify-center text-white/70 hover:bg-white/10 transition-colors">
               <span class="material-symbols-outlined text-[20px]">grid_view</span>
             </button>
           </div>

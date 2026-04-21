@@ -112,39 +112,70 @@ export const useWeatherStore = defineStore('weather', () => {
     currentCityId.value = cities.value[0].id
   }
 
-  // 核心动作：全自动地理位置发现
-  async function autoDetectLocation() {
+  // 核心动作：全自动地理位置发现 (支持 IP 定位与原生地理位置兜底)
+  async function autoDetectLocation(isManual = false) {
+    if (isLocating.value) return // 防止并发触发
     isLocating.value = true
+    
+    console.log(`[定位] 触发方式: ${isManual ? '手动' : '自动'}`)
+
+    // 内部帮助函数：执行城市匹配逻辑
+    const performMatch = (detectedName: string) => {
+      const allAvailableCities = [...chinaCities.value, ...zhejiangCities.value, ...hangzhouDistricts.value]
+      const match = allAvailableCities.find(c => 
+        detectedName.toLowerCase().includes(c.pinyin.toLowerCase()) || 
+        c.pinyin.toLowerCase().includes(detectedName.toLowerCase()) ||
+        detectedName.includes(c.name) ||
+        c.name.includes(detectedName)
+      )
+
+      if (match) {
+        // 匹配成功：自动切换数据集模式并选中城市
+        if (chinaCities.value.some(c => c.id === match.id)) mode.value = 'china'
+        else if (zhejiangCities.value.some(c => c.id === match.id)) mode.value = 'zhejiang'
+        else mode.value = 'hangzhou'
+        
+        currentCityId.value = match.id
+        console.log(`[定位成功] 已匹配到本地数据: ${match.name}`)
+        return true
+      }
+      return false
+    }
+
     try {
-      // 1. 优先尝试 IP 定位 (无弹窗，体验最佳)
+      // 1. 如果是手动点击，可以尝试触发浏览器原生地理位置 (会弹出权限申请)
+      if (isManual && navigator.geolocation) {
+        try {
+          const pos = await new Promise<GeolocationPosition>((resolve, reject) => {
+            navigator.geolocation.getCurrentPosition(resolve, reject, { enableHighAccuracy: true, timeout: 5000 })
+          })
+          console.log(`[系统定位] 成功获取坐标: ${pos.coords.latitude.toFixed(2)}, ${pos.coords.longitude.toFixed(2)}`)
+          // 注意：此处拿到坐标后通常需要高德/百度逆地理编码，
+          // 在本 Demo 中我们继续通过 IP 接口获取城市名称进行数据展示
+        } catch (geoError) {
+          console.warn('[系统定位] 权限拒绝或超时，改用 IP 定位', geoError)
+        }
+      }
+
+      // 2. 尝试 IP 定位 (无弹窗，体验极佳)
       const res = await fetch('https://ipapi.co/json/')
+      if (!res.ok) throw new Error('定位服务响应异常')
       const data = await res.json()
       const detectedCity = data.city // 例如 "Hangzhou" 或 "Beijing"
 
       if (detectedCity) {
-        // 2. 在本地数据集中进行模糊匹配
-        const allAvailableCities = [...chinaCities.value, ...zhejiangCities.value, ...hangzhouDistricts.value]
-        const match = allAvailableCities.find(c => 
-          detectedCity.toLowerCase().includes(c.pinyin.toLowerCase()) || 
-          c.pinyin.toLowerCase().includes(detectedCity.toLowerCase())
-        )
-
-        if (match) {
-          // 匹配成功：自动切换数据集模式并选中城市
-          if (chinaCities.value.some(c => c.id === match.id)) mode.value = 'china'
-          else if (zhejiangCities.value.some(c => c.id === match.id)) mode.value = 'zhejiang'
-          else mode.value = 'hangzhou'
-          
-          currentCityId.value = match.id
-          console.log(`[定位成功] 已自动匹配到: ${match.name}`)
+        const isMatched = performMatch(detectedCity)
+        if (!isMatched) {
+          console.warn(`[定位反馈] 已确认您的位置为 ${detectedCity}，但当前演示数据库仅支持部分核心城市。`)
         }
+      } else {
+         console.warn('[定位反馈] 接口未能识别明确的城市信息')
       }
     } catch (error) {
       console.error('[定位失败]', error)
-      // 降级方案：可以尝试 navigator.geolocation，此处为保持极致体验暂不强制弹窗
     } finally {
-      // 延迟关闭定位状态，确保 UI 反馈顺滑
-      setTimeout(() => { isLocating.value = false }, 1000)
+      // 延迟关闭定位状态，确保 UI 上的“同步中”提示有足够的展示时间
+      setTimeout(() => { isLocating.value = false }, isManual ? 1200 : 600)
     }
   }
 
