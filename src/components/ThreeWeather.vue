@@ -17,10 +17,12 @@ const CONFIG = {
   RAIN_SPEED: 0.6,
   SNOW_SPEED: 0.05,
   CLOUD_COUNT: 12,
-  TRANSITION_SPEED: 0.02,
+  TRANSITION_SPEED: 0.015,
+  SHADOW_SIZE: 1024,
+  GROUND_SIZE: 50,
 }
 
-// --- Weather State Definitions ---
+// --- Weather State Definitions (Enhanced for Advanced Lighting) ---
 const WEATHER_STYLES: Record<WeatherType, {
   topColor: THREE.Color,
   bottomColor: THREE.Color,
@@ -29,97 +31,127 @@ const WEATHER_STYLES: Record<WeatherType, {
   lightIntensity: number,
   cloudOpacity: number,
   particleType: 'none' | 'rain' | 'snow' | 'mist',
-  isStormy: boolean
+  isStormy: boolean,
+  groundWetness: number,
+  groundReflectivity: number,
+  sunPos: THREE.Vector3
 }> = {
   sunny: {
-    topColor: new THREE.Color(0x0077ff),
-    bottomColor: new THREE.Color(0x88ccff),
-    fogColor: new THREE.Color(0x88ccff),
+    topColor: new THREE.Color(0x00aaff),
+    bottomColor: new THREE.Color(0xaaccff),
+    fogColor: new THREE.Color(0xaaccff),
     fogDensity: 0.002,
-    lightIntensity: 1.2,
+    lightIntensity: 1.5,
     cloudOpacity: 0.2,
     particleType: 'none',
-    isStormy: false
+    isStormy: false,
+    groundWetness: 0.1,
+    groundReflectivity: 0.2,
+    sunPos: new THREE.Vector3(10, 20, 10)
   },
   cloudy: {
-    topColor: new THREE.Color(0x445566),
-    bottomColor: new THREE.Color(0x8899aa),
-    fogColor: new THREE.Color(0x8899aa),
+    topColor: new THREE.Color(0x556677),
+    bottomColor: new THREE.Color(0x99aabb),
+    fogColor: new THREE.Color(0x99aabb),
     fogDensity: 0.015,
-    lightIntensity: 0.8,
+    lightIntensity: 1.0,
     cloudOpacity: 0.6,
     particleType: 'none',
-    isStormy: false
+    isStormy: false,
+    groundWetness: 0.2,
+    groundReflectivity: 0.3,
+    sunPos: new THREE.Vector3(5, 10, 5)
   },
   overcast: {
-    topColor: new THREE.Color(0x222233),
-    bottomColor: new THREE.Color(0x444455),
-    fogColor: new THREE.Color(0x444455),
+    topColor: new THREE.Color(0x333344),
+    bottomColor: new THREE.Color(0x555566),
+    fogColor: new THREE.Color(0x555566),
     fogDensity: 0.025,
-    lightIntensity: 0.4,
+    lightIntensity: 0.6,
     cloudOpacity: 0.9,
     particleType: 'none',
-    isStormy: false
+    isStormy: false,
+    groundWetness: 0.4,
+    groundReflectivity: 0.4,
+    sunPos: new THREE.Vector3(0, 10, 0)
   },
   rainy: {
     topColor: new THREE.Color(0x1a1a2e),
     bottomColor: new THREE.Color(0x16213e),
     fogColor: new THREE.Color(0x16213e),
     fogDensity: 0.04,
-    lightIntensity: 0.3,
+    lightIntensity: 0.4,
     cloudOpacity: 0.8,
     particleType: 'rain',
-    isStormy: false
+    isStormy: false,
+    groundWetness: 1.0,
+    groundReflectivity: 0.8,
+    sunPos: new THREE.Vector3(-10, 15, -5)
   },
   thunderstorm: {
-    topColor: new THREE.Color(0x08081a),
-    bottomColor: new THREE.Color(0x101020),
-    fogColor: new THREE.Color(0x101020),
+    topColor: new THREE.Color(0x0a0a1a),
+    bottomColor: new THREE.Color(0x121225),
+    fogColor: new THREE.Color(0x121225),
     fogDensity: 0.05,
-    lightIntensity: 0.2,
+    lightIntensity: 0.3,
     cloudOpacity: 1.0,
     particleType: 'rain',
-    isStormy: true
+    isStormy: true,
+    groundWetness: 1.0,
+    groundReflectivity: 0.9,
+    sunPos: new THREE.Vector3(-5, 10, -5)
   },
   snowy: {
-    topColor: new THREE.Color(0x2c3e50),
-    bottomColor: new THREE.Color(0xbdc3c7),
-    fogColor: new THREE.Color(0xbdc3c7),
+    topColor: new THREE.Color(0x34495e),
+    bottomColor: new THREE.Color(0xecf0f1),
+    fogColor: new THREE.Color(0xecf0f1),
     fogDensity: 0.03,
-    lightIntensity: 0.7,
+    lightIntensity: 0.9,
     cloudOpacity: 0.7,
     particleType: 'snow',
-    isStormy: false
+    isStormy: false,
+    groundWetness: 0.5,
+    groundReflectivity: 0.2,
+    sunPos: new THREE.Vector3(10, 10, 10)
   },
   foggy: {
-    topColor: new THREE.Color(0x555555),
-    bottomColor: new THREE.Color(0xaaaaaa),
-    fogColor: new THREE.Color(0xaaaaaa),
-    fogDensity: 0.08,
-    lightIntensity: 0.5,
+    topColor: new THREE.Color(0x666666),
+    bottomColor: new THREE.Color(0xbbbbbb),
+    fogColor: new THREE.Color(0xbbbbbb),
+    fogDensity: 0.1,
+    lightIntensity: 0.6,
     cloudOpacity: 0.4,
     particleType: 'mist',
-    isStormy: false
+    isStormy: false,
+    groundWetness: 0.6,
+    groundReflectivity: 0.3,
+    sunPos: new THREE.Vector3(0, 5, 0)
   },
   mist: {
-    topColor: new THREE.Color(0x778899),
-    bottomColor: new THREE.Color(0xb0c4de),
-    fogColor: new THREE.Color(0xb0c4de),
-    fogDensity: 0.04,
-    lightIntensity: 0.7,
+    topColor: new THREE.Color(0x8899aa),
+    bottomColor: new THREE.Color(0xc0d2e8),
+    fogColor: new THREE.Color(0xc0d2e8),
+    fogDensity: 0.05,
+    lightIntensity: 0.8,
     cloudOpacity: 0.3,
     particleType: 'mist',
-    isStormy: false
+    isStormy: false,
+    groundWetness: 0.4,
+    groundReflectivity: 0.4,
+    sunPos: new THREE.Vector3(5, 5, 5)
   },
   haze: {
-    topColor: new THREE.Color(0x4b3a2a),
-    bottomColor: new THREE.Color(0x8e7c6b),
-    fogColor: new THREE.Color(0x8e7c6b),
-    fogDensity: 0.06,
-    lightIntensity: 0.6,
+    topColor: new THREE.Color(0x5b4a3a),
+    bottomColor: new THREE.Color(0x9e8c7b),
+    fogColor: new THREE.Color(0x9e8c7b),
+    fogDensity: 0.07,
+    lightIntensity: 0.7,
     cloudOpacity: 0.5,
     particleType: 'mist',
-    isStormy: false
+    isStormy: false,
+    groundWetness: 0.3,
+    groundReflectivity: 0.2,
+    sunPos: new THREE.Vector3(5, 5, -5)
   }
 }
 
@@ -132,42 +164,70 @@ let skyMaterial: THREE.ShaderMaterial
 let particleSystem: THREE.Points
 let clouds: THREE.Group
 let mainLight: THREE.DirectionalLight
+let ground: THREE.Mesh
+let groundMaterial: THREE.MeshPhysicalMaterial
+let envMap: THREE.CubeTexture
+let cubeCamera: THREE.CubeCamera
 let currentTargetStyle = { ...WEATHER_STYLES.sunny }
 let lightningTime = 0
 
 // --- Resources ---
 const textures = {
-  smoke: createSmokeTexture(),
-  rain: createRainTexture(),
-  snow: createSnowTexture()
+  smoke: createTexture('smoke'),
+  rain: createTexture('rain'),
+  snow: createTexture('snow'),
+  groundNormal: createTexture('noise')
 }
 
 function init() {
   if (!container.value) return
 
+  // 1. Scene Setup
   scene = new THREE.Scene()
   camera = new THREE.PerspectiveCamera(75, container.value.clientWidth / container.value.clientHeight, 0.1, 1000)
-  camera.position.z = 8
+  camera.position.set(0, 3, 10)
+  camera.lookAt(0, 2, 0)
 
-  renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true, powerPreference: 'high-performance' })
+  // 2. Renderer Setup (Enable Shadows & High Bits)
+  renderer = new THREE.WebGLRenderer({ 
+    alpha: true, 
+    antialias: true, 
+    powerPreference: 'high-performance' 
+  })
   renderer.setSize(container.value.clientWidth, container.value.clientHeight)
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
+  renderer.shadowMap.enabled = true
+  renderer.shadowMap.type = THREE.PCFSoftShadowMap // Simulation of PCSS
+  renderer.outputColorSpace = THREE.SRGBColorSpace
   container.value.appendChild(renderer.domElement)
 
-  // 1. Sky Background
+  // 3. Environment Mapping Setup
+  const cubeRenderTarget = new THREE.WebGLCubeRenderTarget(256, {
+    format: THREE.RGBAFormat,
+    generateMipmaps: true,
+    minFilter: THREE.LinearMipmapLinearFilter
+  })
+  cubeCamera = new THREE.CubeCamera(1, 1000, cubeRenderTarget)
+
+  // 4. Component Creation
   createSky()
-
-  // 2. Cloud System
+  createGround()
   createClouds()
-
-  // 3. Particle System
   createParticles()
 
-  // 4. Lighting
-  mainLight = new THREE.DirectionalLight(0xffffff, 1)
-  mainLight.position.set(5, 10, 7)
+  // 5. Lighting
+  mainLight = new THREE.DirectionalLight(0xffffff, 1.5)
+  mainLight.position.copy(currentTargetStyle.sunPos)
+  mainLight.castShadow = true
+  mainLight.shadow.mapSize.set(CONFIG.SHADOW_SIZE, CONFIG.SHADOW_SIZE)
+  mainLight.shadow.camera.left = -20
+  mainLight.shadow.camera.right = 20
+  mainLight.shadow.camera.top = 20
+  mainLight.shadow.camera.bottom = -20
   scene.add(mainLight)
-  scene.add(new THREE.AmbientLight(0xffffff, 0.4))
+
+  const ambient = new THREE.AmbientLight(0xffffff, 0.4)
+  scene.add(ambient)
 
   window.addEventListener('resize', onWindowResize)
   updateTargetState(weatherType.value)
@@ -175,50 +235,78 @@ function init() {
 }
 
 function createSky() {
+  // Advanced Atmospheric Scattering Approximation Shader
   const vertexShader = `
+    varying vec3 vWorldPosition;
     varying vec2 vUv;
     void main() {
       vUv = uv;
+      vec4 worldPosition = modelMatrix * vec4(position, 1.0);
+      vWorldPosition = worldPosition.xyz;
       gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
     }
   `
   const fragmentShader = `
     uniform vec3 topColor;
     uniform vec3 bottomColor;
-    uniform float uTime;
+    uniform vec3 sunPosition;
+    varying vec3 vWorldPosition;
     varying vec2 vUv;
     
-    // Simple noise for atmosphere
-    float hash(vec2 p) { return fract(sin(dot(p, vec2(12.9898, 78.233))) * 43758.5453); }
-    
     void main() {
-      float noise = hash(vUv + uTime * 0.01) * 0.02;
-      vec3 col = mix(bottomColor, topColor, vUv.y + noise);
-      float vignette = 1.0 - smoothstep(0.5, 1.8, length(vUv - 0.5));
-      gl_FragColor = vec4(col * (0.9 + 0.1 * vignette), 1.0);
+      vec3 dir = normalize(vWorldPosition);
+      float h = normalize(vWorldPosition).y;
+      
+      // Basic Scattering
+      float sunAmount = max(dot(dir, normalize(sunPosition)), 0.0);
+      vec3 sky = mix(bottomColor, topColor, max(h, 0.0));
+      
+      // Glow around sun (Mie)
+      sky += pow(sunAmount, 8.0) * vec3(1.0, 0.8, 0.6) * 0.5;
+      sky += pow(sunAmount, 64.0) * vec3(1.0, 0.9, 0.8) * 1.0;
+      
+      gl_FragColor = vec4(sky, 1.0);
     }
   `
 
-  const geometry = new THREE.SphereGeometry(100, 32, 32)
+  const geometry = new THREE.SphereGeometry(200, 32, 32)
   skyMaterial = new THREE.ShaderMaterial({
     vertexShader,
     fragmentShader,
     uniforms: {
-      topColor: { value: new THREE.Color(0x0077ff) },
-      bottomColor: { value: new THREE.Color(0x88ccff) },
-      uTime: { value: 0 }
+      topColor: { value: new THREE.Color() },
+      bottomColor: { value: new THREE.Color() },
+      sunPosition: { value: new THREE.Vector3() }
     },
     side: THREE.BackSide,
     depthWrite: false
   })
 
-  const sky = new THREE.Mesh(geometry, skyMaterial)
-  scene.add(sky)
+  scene.add(new THREE.Mesh(geometry, skyMaterial))
+}
+
+function createGround() {
+  const geometry = new THREE.PlaneGeometry(CONFIG.GROUND_SIZE, CONFIG.GROUND_SIZE, 128, 128)
+  groundMaterial = new THREE.MeshPhysicalMaterial({
+    color: 0x111111,
+    roughness: 0.8,
+    metalness: 0.1,
+    normalMap: textures.groundNormal,
+    normalScale: new THREE.Vector2(0.5, 0.5),
+    envMapIntensity: 1.0,
+    transparent: true,
+    opacity: 0.9
+  })
+
+  ground = new THREE.Mesh(geometry, groundMaterial)
+  ground.rotation.x = -Math.PI / 2
+  ground.receiveShadow = true
+  scene.add(ground)
 }
 
 function createClouds() {
   clouds = new THREE.Group()
-  const geometry = new THREE.PlaneGeometry(16, 8)
+  const geometry = new THREE.PlaneGeometry(24, 12)
   
   for (let i = 0; i < CONFIG.CLOUD_COUNT; i++) {
     const material = new THREE.MeshBasicMaterial({
@@ -230,11 +318,10 @@ function createClouds() {
     })
     const cloud = new THREE.Mesh(geometry, material)
     cloud.position.set(
-      (Math.random() - 0.5) * 40,
-      (Math.random() - 0.5) * 10 + 2,
-      (Math.random() - 0.5) * 15 - 5
+      (Math.random() - 0.5) * 60,
+      (Math.random() * 5) + 10,
+      (Math.random() - 0.5) * 30 - 10
     )
-    cloud.scale.setScalar(Math.random() * 2 + 1)
     cloud.userData.speed = Math.random() * 0.005 + 0.002
     clouds.add(cloud)
   }
@@ -247,9 +334,9 @@ function createParticles() {
   const velocities = new Float32Array(CONFIG.PARTICLE_COUNT)
 
   for (let i = 0; i < CONFIG.PARTICLE_COUNT; i++) {
-    positions[i * 3] = (Math.random() - 0.5) * 30
-    positions[i * 3 + 1] = (Math.random() - 0.5) * 30
-    positions[i * 3 + 2] = (Math.random() - 0.5) * 20
+    positions[i * 3] = (Math.random() - 0.5) * 40
+    positions[i * 3 + 1] = Math.random() * 20
+    positions[i * 3 + 2] = (Math.random() - 0.5) * 40
     velocities[i] = Math.random() * 0.5 + 0.5
   }
 
@@ -260,7 +347,6 @@ function createParticles() {
     size: 0.1,
     transparent: true,
     opacity: 0,
-    map: textures.rain,
     blending: THREE.AdditiveBlending,
     depthWrite: false
   })
@@ -273,28 +359,32 @@ function animate() {
   animationId = requestAnimationFrame(animate)
   const time = Date.now() * 0.001
 
-  // 1. Transition State
-  lerpState()
+  // 1. Transition Engine
+  lerpState(time)
 
-  // 2. Animate Sky
-  if (skyMaterial) skyMaterial.uniforms.uTime.value = time
+  // 2. Local Animations
+  animateClouds(time)
+  animateParticles(time)
+  handleLightning(time)
 
-  // 3. Animate Clouds
-  if (clouds) {
-    clouds.children.forEach((cloud: any) => {
-      cloud.position.x -= cloud.userData.speed
-      if (cloud.position.x < -25) cloud.position.x = 25
-      cloud.material.opacity = THREE.MathUtils.lerp(cloud.material.opacity, currentTargetStyle.cloudOpacity * 0.5, 0.01)
-    })
+  // 3. Dynamic Environment Update (Optimized)
+  // Only update env every few frames or slowly to simulate Path Tracing GI
+  if (Math.floor(time * 60) % 5 === 0) {
+    ground.visible = false // Don't reflect the ground in the ground
+    cubeCamera.update(renderer, scene)
+    ground.visible = true
+    groundMaterial.envMap = cubeCamera.renderTarget.texture
   }
 
-  // 4. Animate Particles
-  if (particleSystem) animateParticles(time)
-
-  // 5. Lightning Logic
-  if (mainLight) handleLightning(time)
-
   renderer.render(scene, camera)
+}
+
+function animateClouds(time: number) {
+  clouds.children.forEach((cloud: any) => {
+    cloud.position.x -= cloud.userData.speed
+    if (cloud.position.x < -40) cloud.position.x = 40
+    cloud.material.opacity = THREE.MathUtils.lerp(cloud.material.opacity, currentTargetStyle.cloudOpacity * 0.4, 0.01)
+  })
 }
 
 function animateParticles(time: number) {
@@ -302,29 +392,27 @@ function animateParticles(time: number) {
   const velArr = particleSystem.geometry.attributes.velocity.array as Float32Array
   const type = currentTargetStyle.particleType
   
-  // Update visibility
-  const targetOpacity = type === 'none' ? 0 : 0.6
   const mat = particleSystem.material as THREE.PointsMaterial
+  const targetOpacity = type === 'none' ? 0 : 0.6
   mat.opacity = THREE.MathUtils.lerp(mat.opacity, targetOpacity, 0.05)
   
   if (type === 'none') return
 
-  mat.map = type === 'rain' ? textures.rain : textures.snow
-  mat.size = type === 'rain' ? 0.15 : 0.1
+  mat.map = type === 'rain' ? textures.rain : (type === 'snow' ? textures.snow : null)
+  mat.size = type === 'rain' ? 0.2 : 0.1
 
   for (let i = 0; i < CONFIG.PARTICLE_COUNT; i++) {
     const idx = i * 3
     if (type === 'rain') {
       posArr[idx + 1] -= CONFIG.RAIN_SPEED * velArr[i]
-      if (posArr[idx + 1] < -15) posArr[idx + 1] = 15
+      if (posArr[idx + 1] < 0) {
+          posArr[idx + 1] = 20
+          // Simple Ripple Simulation Idea: we could trigger something here
+      }
     } else if (type === 'snow') {
       posArr[idx + 1] -= CONFIG.SNOW_SPEED * velArr[i]
-      posArr[idx] += Math.sin(time + posArr[idx + 1]) * 0.01
-      if (posArr[idx + 1] < -15) posArr[idx + 1] = 15
-    } else if (type === 'mist') {
-       posArr[idx + 1] -= 0.005
-       posArr[idx] += Math.cos(time * 0.5 + posArr[idx + 2]) * 0.005
-       if (posArr[idx + 1] < -15) posArr[idx + 1] = 15
+      posArr[idx] += Math.sin(time + posArr[idx + 1]) * 0.02
+      if (posArr[idx + 1] < 0) posArr[idx + 1] = 20
     }
   }
   particleSystem.geometry.attributes.position.needsUpdate = true
@@ -332,36 +420,98 @@ function animateParticles(time: number) {
 
 function handleLightning(time: number) {
   if (!currentTargetStyle.isStormy) {
-    mainLight.intensity = THREE.MathUtils.lerp(mainLight.intensity, currentTargetStyle.lightIntensity, 0.1)
+    mainLight.intensity = THREE.MathUtils.lerp(mainLight.intensity, currentTargetStyle.lightIntensity, 0.05)
     return
   }
 
   if (time > lightningTime) {
-    // Trigger Flash
-    mainLight.intensity = 5 + Math.random() * 5
-    lightningTime = time + Math.random() * 4 + 2
+    mainLight.intensity = 10 + Math.random() * 20
+    lightningTime = time + Math.random() * 5 + 2
   } else {
-    mainLight.intensity = THREE.MathUtils.lerp(mainLight.intensity, currentTargetStyle.lightIntensity, 0.05)
+    mainLight.intensity = THREE.MathUtils.lerp(mainLight.intensity, currentTargetStyle.lightIntensity, 0.1)
   }
 }
 
-function lerpState() {
+function lerpState(time: number) {
   const style = currentTargetStyle
-  if (skyMaterial) {
-    skyMaterial.uniforms.topColor.value.lerp(style.topColor, CONFIG.TRANSITION_SPEED)
-    skyMaterial.uniforms.bottomColor.value.lerp(style.bottomColor, CONFIG.TRANSITION_SPEED)
-  }
   
+  // Sky
+  skyMaterial.uniforms.topColor.value.lerp(style.topColor, CONFIG.TRANSITION_SPEED)
+  skyMaterial.uniforms.bottomColor.value.lerp(style.bottomColor, CONFIG.TRANSITION_SPEED)
+  skyMaterial.uniforms.sunPosition.value.lerp(style.sunPos, CONFIG.TRANSITION_SPEED)
+  
+  // Lighting
+  mainLight.position.lerp(style.sunPos, CONFIG.TRANSITION_SPEED)
+  
+  // Fog
   if (scene.fog instanceof THREE.FogExp2) {
     scene.fog.color.lerp(style.fogColor, CONFIG.TRANSITION_SPEED)
     scene.fog.density = THREE.MathUtils.lerp(scene.fog.density, style.fogDensity, CONFIG.TRANSITION_SPEED)
   } else {
     scene.fog = new THREE.FogExp2(style.fogColor.getHex(), style.fogDensity)
   }
+  
+  // Ground Physical Properties (Inspired by Water/Wetness)
+  groundMaterial.roughness = THREE.MathUtils.lerp(groundMaterial.roughness, 1.0 - style.groundWetness * 0.9, CONFIG.TRANSITION_SPEED)
+  groundMaterial.metalness = THREE.MathUtils.lerp(groundMaterial.metalness, style.groundReflectivity * 0.5, CONFIG.TRANSITION_SPEED)
+  groundMaterial.clearcoat = THREE.MathUtils.lerp(groundMaterial.clearcoat || 0, style.groundWetness, CONFIG.TRANSITION_SPEED)
+  groundMaterial.clearcoatRoughness = 1.0 - style.groundWetness
+  
+  // Ripple Animation using NormalMap Offset
+  if (style.groundWetness > 0.5) {
+     groundMaterial.normalScale.setScalar(0.8 + Math.sin(time * 2.0) * 0.2)
+  } else {
+     groundMaterial.normalScale.setScalar(0.2)
+  }
 }
 
 function updateTargetState(type: WeatherType) {
   currentTargetStyle = WEATHER_STYLES[type] || WEATHER_STYLES.sunny
+}
+
+function createTexture(type: 'smoke' | 'rain' | 'snow' | 'noise') {
+  const canvas = document.createElement('canvas')
+  const ctx = canvas.getContext('2d')!
+  
+  if (type === 'smoke') {
+    canvas.width = canvas.height = 128
+    const g = ctx.createRadialGradient(64, 64, 0, 64, 64, 64)
+    g.addColorStop(0, 'rgba(255, 255, 255, 0.4)')
+    g.addColorStop(0.5, 'rgba(200, 200, 200, 0.1)')
+    g.addColorStop(1, 'rgba(255, 255, 255, 0)')
+    ctx.fillStyle = g
+    ctx.fillRect(0, 0, 128, 128)
+  } else if (type === 'rain') {
+    canvas.width = 16
+    canvas.height = 64
+    const g = ctx.createLinearGradient(8, 0, 8, 64)
+    g.addColorStop(0, 'rgba(255,255,255,0)')
+    g.addColorStop(0.5, 'rgba(255,255,255,0.9)')
+    g.addColorStop(1, 'rgba(255,255,255,0)')
+    ctx.fillStyle = g
+    ctx.fillRect(0, 0, 16, 64)
+  } else if (type === 'snow') {
+    canvas.width = canvas.height = 32
+    ctx.fillStyle = '#fff'
+    ctx.beginPath()
+    ctx.arc(16, 16, 14, 0, Math.PI * 2)
+    ctx.fill()
+  } else if (type === 'noise') {
+    canvas.width = canvas.height = 256
+    for(let i=0; i<256; i++) {
+      for(let j=0; j<256; j++) {
+        const c = Math.random() * 255
+        ctx.fillStyle = `rgb(${c},${c},${c})`
+        ctx.fillRect(i, j, 1, 1)
+      }
+    }
+  }
+  
+  const tex = new THREE.CanvasTexture(canvas)
+  if (type === 'noise') {
+    tex.wrapS = tex.wrapT = THREE.RepeatWrapping
+  }
+  return tex
 }
 
 function onWindowResize() {
@@ -371,55 +521,13 @@ function onWindowResize() {
   renderer.setSize(container.value.clientWidth, container.value.clientHeight)
 }
 
-// --- Textures Generators ---
-function createSmokeTexture() {
-  const canvas = document.createElement('canvas')
-  canvas.width = 128
-  canvas.height = 128
-  const ctx = canvas.getContext('2d')!
-  const gradient = ctx.createRadialGradient(64, 64, 0, 64, 64, 64)
-  gradient.addColorStop(0, 'rgba(255, 255, 255, 0.8)')
-  gradient.addColorStop(0.3, 'rgba(200, 200, 200, 0.3)')
-  gradient.addColorStop(1, 'rgba(255, 255, 255, 0)')
-  ctx.fillStyle = gradient
-  ctx.fillRect(0, 0, 128, 128)
-  return new THREE.CanvasTexture(canvas)
-}
-
-function createRainTexture() {
-  const canvas = document.createElement('canvas')
-  canvas.width = 16
-  canvas.height = 64
-  const ctx = canvas.getContext('2d')!
-  const g = ctx.createLinearGradient(8, 0, 8, 64)
-  g.addColorStop(0, 'rgba(255,255,255,0)')
-  g.addColorStop(0.5, 'rgba(255,255,255,0.8)')
-  g.addColorStop(1, 'rgba(255,255,255,0)')
-  ctx.fillStyle = g
-  ctx.fillRect(0, 0, 16, 64)
-  return new THREE.CanvasTexture(canvas)
-}
-
-function createSnowTexture() {
-  const canvas = document.createElement('canvas')
-  canvas.width = 32
-  canvas.height = 32
-  const ctx = canvas.getContext('2d')!
-  const g = ctx.createRadialGradient(16, 16, 0, 16, 16, 16)
-  g.addColorStop(0, 'rgba(255, 255, 255, 1)')
-  g.addColorStop(1, 'rgba(255, 255, 255, 0)')
-  ctx.fillStyle = g
-  ctx.fillRect(0, 0, 32, 32)
-  return new THREE.CanvasTexture(canvas)
-}
-
 watch(weatherType, (newVal) => updateTargetState(newVal))
 
 onMounted(() => init())
 onUnmounted(() => {
   window.removeEventListener('resize', onWindowResize)
   cancelAnimationFrame(animationId)
-  if (renderer) renderer.dispose()
+  renderer?.dispose()
 })
 </script>
 
