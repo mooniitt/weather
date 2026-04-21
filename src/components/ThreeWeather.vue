@@ -170,6 +170,8 @@ let envMap: THREE.CubeTexture
 let cubeCamera: THREE.CubeCamera
 let currentTargetStyle = { ...WEATHER_STYLES.sunny }
 let lightningTime = 0
+let particleMaterial: THREE.ShaderMaterial
+let startTime = Date.now()
 
 // --- Resources ---
 const textures = {
@@ -195,9 +197,9 @@ function init() {
     powerPreference: 'high-performance' 
   })
   renderer.setSize(container.value.clientWidth, container.value.clientHeight)
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5)) // 限制像素比上限提升性能
   renderer.shadowMap.enabled = true
-  renderer.shadowMap.type = THREE.PCFSoftShadowMap // Simulation of PCSS
+  renderer.shadowMap.type = THREE.BasicShadowMap // 采用更高性能的阴影映射方案
   renderer.outputColorSpace = THREE.SRGBColorSpace
   container.value.appendChild(renderer.domElement)
 
@@ -286,7 +288,7 @@ function createSky() {
 }
 
 function createGround() {
-  const geometry = new THREE.PlaneGeometry(CONFIG.GROUND_SIZE, CONFIG.GROUND_SIZE, 128, 128)
+  const geometry = new THREE.PlaneGeometry(CONFIG.GROUND_SIZE, CONFIG.GROUND_SIZE, 32, 32) // 降低细分面数
   groundMaterial = new THREE.MeshPhysicalMaterial({
     color: 0x111111,
     roughness: 0.8,
@@ -343,38 +345,74 @@ function createParticles() {
   geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3))
   geometry.setAttribute('velocity', new THREE.BufferAttribute(velocities, 1))
 
-  const material = new THREE.PointsMaterial({
-    size: 0.1,
+  particleMaterial = new THREE.ShaderMaterial({
+    uniforms: {
+      uTime: { value: 0 },
+      uSpeed: { value: CONFIG.RAIN_SPEED },
+      uOpacity: { value: 0 },
+      uTexture: { value: textures.rain },
+      uPointSize: { value: 0.2 }
+    },
+    vertexShader: `
+      attribute float velocity;
+      uniform float uTime;
+      uniform float uSpeed;
+      uniform float uPointSize;
+      varying float vOpacity;
+      void main() {
+        vec3 pos = position;
+        float fall = uTime * uSpeed * velocity;
+        pos.y = mod(pos.y - fall, 20.0);
+        
+        // 雪花特有的左右摆动逻辑（通过速度判断类型）
+        if (uSpeed < 0.1) {
+          pos.x += sin(uTime + pos.y) * 0.3;
+        }
+
+        vec4 mvPosition = modelViewMatrix * vec4(pos, 1.0);
+        gl_PointSize = uPointSize * (300.0 / -mvPosition.z);
+        gl_Position = projectionMatrix * mvPosition;
+        vOpacity = 1.0;
+      }
+    `,
+    fragmentShader: `
+      uniform sampler2D uTexture;
+      uniform float uOpacity;
+      varying float vOpacity;
+      void main() {
+        vec4 texColor = texture2D(uTexture, gl_PointCoord);
+        if (texColor.a < 0.1) discard;
+        gl_FragColor = texColor * vec4(1.0, 1.0, 1.0, uOpacity);
+      }
+    `,
     transparent: true,
-    opacity: 0,
     blending: THREE.AdditiveBlending,
     depthWrite: false
   })
 
-  particleSystem = new THREE.Points(geometry, material)
+  particleSystem = new THREE.Points(geometry, particleMaterial)
   scene.add(particleSystem)
 }
 
 function animate() {
   animationId = requestAnimationFrame(animate)
-  const time = Date.now() * 0.001
+  const time = (Date.now() - startTime) * 0.001
 
   // 1. Transition Engine
   lerpState(time)
 
   // 2. Local Animations
   animateClouds(time)
-  animateParticles(time)
+  
+  // 更新 GPU 粒子 Uniforms
+  if (particleMaterial) {
+    particleMaterial.uniforms.uTime.value = time
+  }
+  
   handleLightning(time)
 
-  // 3. Dynamic Environment Update (Optimized)
-  // Only update env every few frames or slowly to simulate Path Tracing GI
-  if (Math.floor(time * 60) % 5 === 0) {
-    ground.visible = false // Don't reflect the ground in the ground
-    cubeCamera.update(renderer, scene)
-    ground.visible = true
-    groundMaterial.envMap = cubeCamera.renderTarget.texture
-  }
+  // 3. 移除高昂的周期性反射更新
+  // 仅在明确调用时（如天气切换结束后）更新反射，大幅降低 Draw Calls
 
   renderer.render(scene, camera)
 }
@@ -388,34 +426,7 @@ function animateClouds(time: number) {
 }
 
 function animateParticles(time: number) {
-  const posArr = particleSystem.geometry.attributes.position.array as Float32Array
-  const velArr = particleSystem.geometry.attributes.velocity.array as Float32Array
-  const type = currentTargetStyle.particleType
-  
-  const mat = particleSystem.material as THREE.PointsMaterial
-  const targetOpacity = type === 'none' ? 0 : 0.6
-  mat.opacity = THREE.MathUtils.lerp(mat.opacity, targetOpacity, 0.05)
-  
-  if (type === 'none') return
-
-  mat.map = type === 'rain' ? textures.rain : (type === 'snow' ? textures.snow : null)
-  mat.size = type === 'rain' ? 0.2 : 0.1
-
-  for (let i = 0; i < CONFIG.PARTICLE_COUNT; i++) {
-    const idx = i * 3
-    if (type === 'rain') {
-      posArr[idx + 1] -= CONFIG.RAIN_SPEED * velArr[i]
-      if (posArr[idx + 1] < 0) {
-          posArr[idx + 1] = 20
-          // Simple Ripple Simulation Idea: we could trigger something here
-      }
-    } else if (type === 'snow') {
-      posArr[idx + 1] -= CONFIG.SNOW_SPEED * velArr[i]
-      posArr[idx] += Math.sin(time + posArr[idx + 1]) * 0.02
-      if (posArr[idx + 1] < 0) posArr[idx + 1] = 20
-    }
-  }
-  particleSystem.geometry.attributes.position.needsUpdate = true
+  // 逻辑已移至 GPU Shader
 }
 
 function handleLightning(time: number) {
@@ -457,17 +468,36 @@ function lerpState(time: number) {
   groundMaterial.clearcoat = THREE.MathUtils.lerp(groundMaterial.clearcoat || 0, style.groundWetness, CONFIG.TRANSITION_SPEED)
   groundMaterial.clearcoatRoughness = 1.0 - style.groundWetness
   
-  // Ripple Animation using NormalMap Offset
-  if (style.groundWetness > 0.5) {
-     groundMaterial.normalScale.setScalar(0.8 + Math.sin(time * 2.0) * 0.2)
-  } else {
-     groundMaterial.normalScale.setScalar(0.2)
+  // Particle Shader Uniforms Update
+  if (particleMaterial) {
+    const type = style.particleType
+    const targetOpacity = type === 'none' ? 0 : 0.6
+    
+    particleMaterial.uniforms.uOpacity.value = THREE.MathUtils.lerp(particleMaterial.uniforms.uOpacity.value, targetOpacity, 0.05)
+    
+    if (type !== 'none') {
+      particleMaterial.uniforms.uSpeed.value = type === 'rain' ? CONFIG.RAIN_SPEED : CONFIG.SNOW_SPEED
+      particleMaterial.uniforms.uTexture.value = type === 'rain' ? textures.rain : textures.snow
+      particleMaterial.uniforms.uPointSize.value = type === 'rain' ? 0.2 : 0.1
+    }
   }
 }
 
 function updateTargetState(type: WeatherType) {
   currentTargetStyle = WEATHER_STYLES[type] || WEATHER_STYLES.sunny
+  
+  // 天气变化时异步触发一次反射贴图更新
+  setTimeout(() => {
+    if (renderer && scene && ground) {
+      ground.visible = false
+      cubeCamera.update(renderer, scene)
+      ground.visible = true
+      groundMaterial.envMap = cubeCamera.renderTarget.texture
+    }
+  }, 1000)
 }
+
+watch(weatherType, (newVal) => updateTargetState(newVal))
 
 function createTexture(type: 'smoke' | 'rain' | 'snow' | 'noise') {
   const canvas = document.createElement('canvas')

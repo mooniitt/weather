@@ -44,45 +44,45 @@ export const useWeatherStore = defineStore('weather', () => {
   // 当前选中的城市 ID
   const currentCityId = ref('beijing')
 
-  // 1. 全国核心城市数据集 (源自 china_weather_2026-04-17.json)
+  // 1. 全国核心城市数据集 (2026-04-21)
   const chinaCities = ref<City[]>([
     {
-      id: 'beijing', name: '北京市', pinyin: 'Beijing', parent: '中国', province: '北京', temp: 19, feelsLike: '19°C', weather: '薄雾 (Mist)', time: '14:00', weatherType: 'cloudy',
-      humidity: '68%', wind: 'SSW 6km/h', pressure: '1012 hPa', uvIndex: '6', visibility: '10km',
-      stats: { humidity: '68%', wind: '6km/h', visibility: '10km', uv: '6' },
-      hourlyForecast: [{ time: '12:00', temp: 19, weather: 'Mist', humidity: '68%' }, { time: '15:00', temp: 21, weather: 'Sunny', humidity: '73%' }]
+      id: 'beijing', name: '北京市', pinyin: 'Beijing', parent: '中国', province: '北京', temp: 24, feelsLike: '25°C', weather: '晴朗 (Sunny)', time: '14:41', weatherType: 'sunny',
+      humidity: '35%', wind: 'W 15km/h', pressure: '1010 hPa', uvIndex: '8', visibility: '15km',
+      stats: { humidity: '35%', wind: '15km/h', visibility: '15km', uv: '8' },
+      hourlyForecast: [{ time: '14:00', temp: 24, weather: 'Sunny', humidity: '35%' }, { time: '17:00', temp: 22, weather: 'Sunny', humidity: '40%' }]
     },
     {
-      id: 'shanghai', name: '上海市', pinyin: 'Shanghai', parent: '中国', province: '上海', temp: 20, feelsLike: '20°C', weather: '多云 (Partly cloudy)', time: '14:00', weatherType: 'cloudy',
-      humidity: '72%', wind: 'S 11km/h', pressure: '1013 hPa', uvIndex: '5', visibility: '12km',
-      stats: { humidity: '72%', wind: '11km/h', visibility: '12km', uv: '5' },
-      hourlyForecast: [{ time: '12:00', temp: 20, weather: 'Partly cloudy', humidity: '72%' }, { time: '15:00', temp: 20, weather: 'Sunny', humidity: '72%' }]
+      id: 'shanghai', name: '上海市', pinyin: 'Shanghai', parent: '中国', province: '上海', temp: 22, feelsLike: '22°C', weather: '阴天 (Overcast)', time: '14:41', weatherType: 'overcast',
+      humidity: '82%', wind: 'SE 12km/h', pressure: '1012 hPa', uvIndex: '3', visibility: '8km',
+      stats: { humidity: '82%', wind: '12km/h', visibility: '8km', uv: '3' },
+      hourlyForecast: [{ time: '14:00', temp: 22, weather: 'Overcast', humidity: '82%' }, { time: '17:00', temp: 21, weather: 'Cloudy', humidity: '85%' }]
     },
     {
-      id: 'guangzhou', name: '广州市', pinyin: 'Guangzhou', parent: '中国', province: '广东', temp: 27, feelsLike: '29°C', weather: '多云 (Partly cloudy)', time: '14:00', weatherType: 'cloudy',
-      humidity: '74%', wind: 'S 13km/h', pressure: '1013 hPa', uvIndex: '10', visibility: '15km',
-      stats: { humidity: '74%', wind: '13km/h', visibility: '15km', uv: '10' }
+      id: 'guangzhou', name: '广州市', pinyin: 'Guangzhou', parent: '中国', province: '广东', temp: 25, feelsLike: '28°C', weather: '小雨 (Light rain)', time: '14:41', weatherType: 'rainy',
+      humidity: '94%', wind: 'S 8km/h', pressure: '1011 hPa', uvIndex: '2', visibility: '5km',
+      stats: { humidity: '94%', wind: '8km/h', visibility: '5km', uv: '2' }
     },
-    { id: 'shenzhen', name: '深圳市', pinyin: 'Shenzhen', parent: '中国', province: '广东', temp: 28, feelsLike: '30°C', weather: '多云 (Partly Cloudy)', time: '14:00', weatherType: 'cloudy', humidity: '69%', wind: 'SSE 10km/h', pressure: '1012 hPa', uvIndex: '11', visibility: '14km', stats: { humidity: '69%', wind: '10km/h', visibility: '14km', uv: '11' } },
-    { id: 'chengdu', name: '成都市', pinyin: 'Chengdu', parent: '中国', province: '四川', temp: 25, feelsLike: '26°C', weather: '晴天 (Sunny)', time: '14:00', weatherType: 'sunny', humidity: '47%', wind: 'S 13km/h', pressure: '1015 hPa', uvIndex: '10', visibility: '10km', stats: { humidity: '47%', wind: '13km/h', visibility: '10km', uv: '10' } },
-    { id: 'chongqing', name: '重庆市', pinyin: 'Chongqing', parent: '中国', province: '重庆', temp: 25, feelsLike: '25°C', weather: '晴天 (Sunny)', time: '14:00', weatherType: 'sunny', humidity: '39%', wind: 'NE 6km/h', pressure: '1013 hPa', uvIndex: '9', visibility: '12km', stats: { humidity: '39%', wind: '6km/h', visibility: '12km', uv: '9' } },
-    { id: 'wuhan', name: '武汉市', pinyin: 'Wuhan', parent: '中国', province: '湖北', temp: 26, feelsLike: '27°C', weather: '晴天 (Sunny)', time: '14:00', weatherType: 'sunny', humidity: '47%', wind: 'ESE 10km/h', pressure: '1012 hPa', uvIndex: '8', visibility: '15km', stats: { humidity: '47%', wind: '10km/h', visibility: '15km', uv: '8' } },
-    { id: 'xian', name: '西安市', pinyin: 'Xian', parent: '中国', province: '陕西', temp: 26, feelsLike: '25°C', weather: '晴天 (Sunny)', time: '14:00', weatherType: 'sunny', humidity: '26%', wind: 'ENE 9km/h', pressure: '1014 hPa', uvIndex: '8', visibility: '20km', stats: { humidity: '26%', wind: '9km/h', visibility: '20km', uv: '8' } },
-    { id: 'harbin', name: '哈尔滨市', pinyin: 'Harbin', parent: '中国', province: '黑龙江', temp: 10, feelsLike: '8°C', weather: '小雨 (Light drizzle)', time: '14:00', weatherType: 'rainy', humidity: '92%', wind: 'S 12km/h', pressure: '1008 hPa', uvIndex: '0', visibility: '2km', stats: { humidity: '92%', wind: '12km/h', visibility: '2km', uv: '0' } },
-    { id: 'kunming', name: '昆明市', pinyin: 'Kunming', parent: '中国', province: '云南', temp: 26, feelsLike: '26°C', weather: '雷阵雨 (Thunderstorm)', time: '14:00', weatherType: 'thunderstorm', humidity: '56%', wind: 'SW 18km/h', pressure: '1008 hPa', uvIndex: '10', visibility: '8km', stats: { humidity: '56%', wind: '18km/h', visibility: '8km', uv: '10' } }
+    { id: 'shenzhen', name: '深圳市', pinyin: 'Shenzhen', parent: '中国', province: '广东', temp: 26, feelsLike: '29°C', weather: '小雨 (Light rain)', time: '14:41', weatherType: 'rainy', humidity: '89%', wind: 'S 10km/h', pressure: '1010 hPa', uvIndex: '2', visibility: '6km', stats: { humidity: '89%', wind: '10km/h', visibility: '6km', uv: '2' } },
+    { id: 'chengdu', name: '成都市', pinyin: 'Chengdu', parent: '中国', province: '四川', temp: 23, feelsLike: '24°C', weather: '多云 (Partly cloudy)', time: '14:41', weatherType: 'cloudy', humidity: '65%', wind: 'E 5km/h', pressure: '1014 hPa', uvIndex: '6', visibility: '12km', stats: { humidity: '65%', wind: '5km/h', visibility: '12km', uv: '6' } },
+    { id: 'chongqing', name: '重庆市', pinyin: 'Chongqing', parent: '中国', province: '重庆', temp: 27, feelsLike: '29°C', weather: '多云 (Cloudy)', time: '14:41', weatherType: 'cloudy', humidity: '72%', wind: 'NE 8km/h', pressure: '1012 hPa', uvIndex: '5', visibility: '10km', stats: { humidity: '72%', wind: '8km/h', visibility: '10km', uv: '5' } },
+    { id: 'wuhan', name: '武汉市', pinyin: 'Wuhan', parent: '中国', province: '湖北', temp: 25, feelsLike: '26°C', weather: '晴朗 (Sunny)', time: '14:41', weatherType: 'sunny', humidity: '45%', wind: 'SE 12km/h', pressure: '1012 hPa', uvIndex: '9', visibility: '15km', stats: { humidity: '45%', wind: '12km/h', visibility: '15km', uv: '9' } },
+    { id: 'xian', name: '西安市', pinyin: 'Xian', parent: '中国', province: '陕西', temp: 26, feelsLike: '26°C', weather: '晴朗 (Sunny)', time: '14:41', weatherType: 'sunny', humidity: '30%', wind: 'NE 14km/h', pressure: '1013 hPa', uvIndex: '8', visibility: '20km', stats: { humidity: '30%', wind: '14km/h', visibility: '20km', uv: '8' } },
+    { id: 'harbin', name: '哈尔滨市', pinyin: 'Harbin', parent: '中国', province: '黑龙江', temp: 12, feelsLike: '10°C', weather: '阴天 (Overcast)', time: '14:41', weatherType: 'overcast', humidity: '42%', wind: 'S 18km/h', pressure: '1009 hPa', uvIndex: '4', visibility: '10km', stats: { humidity: '42%', wind: '18km/h', visibility: '10km', uv: '4' } },
+    { id: 'kunming', name: '昆明市', pinyin: 'Kunming', parent: '中国', province: '云南', temp: 22, feelsLike: '22°C', weather: '晴朗 (Sunny)', time: '14:41', weatherType: 'sunny', humidity: '38%', wind: 'SW 20km/h', pressure: '1008 hPa', uvIndex: '10', visibility: '20km', stats: { humidity: '38%', wind: '20km/h', visibility: '20km', uv: '10' } }
   ])
 
-  // 2. 浙江地级市数据集 (源自 zhejiang_weather_2026-04-17.json)
+  // 2. 浙江地级市数据集 (2026-04-21)
   const zhejiangCities = ref<City[]>([
-    { id: 'hangzhou_city', name: '杭州市', pinyin: 'Hangzhou', parent: '浙江省', temp: 21, feelsLike: '21°C', weather: '薄雾 (Mist)', time: '11:58', weatherType: 'cloudy', humidity: '73%', wind: 'NNE 8km/h', pressure: '1015 hPa', uvIndex: '5', visibility: '10km', stats: { humidity: '73%', wind: '8km/h', visibility: '10km', uv: '5' } },
-    { id: 'ningbo', name: '宁波市', pinyin: 'Ningbo', parent: '浙江省', temp: 22, feelsLike: '25°C', weather: '多云 (Partly cloudy)', time: '11:58', weatherType: 'cloudy', humidity: '65%', wind: 'NNW 16km/h', pressure: '1014 hPa', uvIndex: '6', visibility: '12km', stats: { humidity: '65%', wind: '16km/h', visibility: '12km', uv: '6' } },
-    { id: 'wenzhou', name: '温州市', pinyin: 'Wenzhou', parent: '浙江省', temp: 24, feelsLike: '26°C', weather: '小雨 (Light drizzle)', time: '11:58', weatherType: 'rainy', humidity: '70%', wind: 'SE 5km/h', pressure: '1013 hPa', uvIndex: '7', visibility: '6km', stats: { humidity: '70%', wind: '5km/h', visibility: '6km', uv: '7' } }
+    { id: 'hangzhou_city', name: '杭州市', pinyin: 'Hangzhou', parent: '浙江省', temp: 23, feelsLike: '23°C', weather: '阴天 (Overcast)', time: '14:41', weatherType: 'overcast', humidity: '78%', wind: 'SE 10km/h', pressure: '1013 hPa', uvIndex: '4', visibility: '8km', stats: { humidity: '78%', wind: '10km/h', visibility: '8km', uv: '4' } },
+    { id: 'ningbo', name: '宁波市', pinyin: 'Ningbo', parent: '浙江省', temp: 24, feelsLike: '24°C', weather: '阴天 (Overcast)', time: '14:41', weatherType: 'overcast', humidity: '75%', wind: 'SE 12km/h', pressure: '1012 hPa', uvIndex: '4', visibility: '10km', stats: { humidity: '75%', wind: '12km/h', visibility: '10km', uv: '4' } },
+    { id: 'wenzhou', name: '温州市', pinyin: 'Wenzhou', parent: '浙江省', temp: 25, feelsLike: '26°C', weather: '阵雨 (Showers)', time: '14:41', weatherType: 'rainy', humidity: '85%', wind: 'S 8km/h', pressure: '1011 hPa', uvIndex: '3', visibility: '6km', stats: { humidity: '85%', wind: '8km/h', visibility: '6km', uv: '3' } }
   ])
 
-  // 3. 杭州行政区数据集 (源自 hangzhou_weather_2026-04-17.json)
+  // 3. 杭州行政区数据集 (2026-04-21)
   const hangzhouDistricts = ref<City[]>([
-    { id: 'shangcheng', name: '上城区', pinyin: 'Shangcheng', parent: '杭州市', temp: 22, feelsLike: '25°C', weather: '雾霾 (Haze)', time: '11:51', weatherType: 'cloudy', humidity: '65%', wind: 'NNE 8km/h', pressure: '1014 hPa', uvIndex: '5', visibility: '5km', stats: { humidity: '65%', wind: '8km/h', visibility: '5km', uv: '5' } },
-    { id: 'xihu', name: '西湖区', pinyin: 'Xihu', parent: '杭州市', temp: 22, feelsLike: '25°C', weather: '浓雾 (Foggy)', time: '11:51', weatherType: 'foggy', humidity: '92%', wind: 'NNE 8km/h', pressure: '1014 hPa', uvIndex: '1', visibility: '1km', stats: { humidity: '92%', wind: '8km/h', visibility: '1km', uv: '1' } }
+    { id: 'shangcheng', name: '上城区', pinyin: 'Shangcheng', parent: '杭州市', temp: 23, feelsLike: '23°C', weather: '阴天 (Overcast)', time: '14:41', weatherType: 'overcast', humidity: '78%', wind: 'SE 10km/h', pressure: '1013 hPa', uvIndex: '4', visibility: '8km', stats: { humidity: '78%', wind: '10km/h', visibility: '8km', uv: '4' } },
+    { id: 'xihu', name: '西湖区', pinyin: 'Xihu', parent: '杭州市', temp: 23, feelsLike: '23°C', weather: '浓雾 (Foggy)', time: '14:41', weatherType: 'foggy', humidity: '92%', wind: 'E 5km/h', pressure: '1013 hPa', uvIndex: '1', visibility: '1km', stats: { humidity: '92%', wind: '5km/h', visibility: '1km', uv: '1' } }
   ])
 
   // 根据当前模式选择数据集
